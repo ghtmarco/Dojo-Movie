@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterPage"> <EditText
+    android:id="@+id/editTextRegisterPhoneNumber"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:hint="Email"
+    android:inputType="phone"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="80dp"
+    android:layout_marginStart="32dp"
+    android:layout_marginEnd="32dp" />
+
+    <EditText
+        android:id="@+id/editTextRegisterPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@+id/editTextRegisterPhoneNumber"
+        app:layout_constraintStart_toStartOf="@+id/editTextRegisterPhoneNumber"
+        app:layout_constraintEnd_toEndOf="@+id/editTextRegisterPhoneNumber"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/editTextConfirmPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Confirmation Password"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@+id/editTextRegisterPassword"
+        app:layout_constraintStart_toStartOf="@+id/editTextRegisterPassword"
+        app:layout_constraintEnd_toEndOf="@+id/editTextRegisterPassword"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/buttonRegister"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        app:layout_constraintTop_toBottomOf="@+id/editTextConfirmPassword"
+        app:layout_constraintStart_toStartOf="@+id/editTextConfirmPassword"
+        app:layout_constraintEnd_toEndOf="@+id/editTextConfirmPassword"
+        android:layout_marginTop="32dp" />
+
+    <TextView
+        android:id="@+id/textViewLoginLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Already has an account? Log in here"
+        android:textColor="?android:attr/colorAccent"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@+id/buttonRegister"
+        app:layout_constraintStart_toStartOf="@+id/buttonRegister"
+        app:layout_constraintEnd_toEndOf="@+id/buttonRegister"
+        android:layout_marginTop="24dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
