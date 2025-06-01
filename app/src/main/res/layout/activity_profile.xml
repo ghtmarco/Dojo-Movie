@@ -85,8 +85,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_home"
-                android:tint="#6c757d" />
+                android:src="@drawable/home" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -112,8 +111,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_history"
-                android:tint="#6c757d" />
+                android:src="@drawable/history" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -139,8 +137,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_profile"
-                android:tint="#007bff" />
+                android:src="@drawable/user" />
 
             <TextView
                 android:layout_width="wrap_content"
