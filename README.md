@@ -52,23 +52,6 @@ The application consists of the following main pages:
 *   **Detail Film Page:** Shows detailed information about a selected film and allows users to purchase it.
 *   **History Page:** Displays a list of past transactions for the logged-in user.
 
-### Page Navigation Flow
-```mermaid
-graph TD
-    subgraph Authentication
-        direction LR
-        LoginPage((Login Page)) --- RegisterPage((Register Page))
-        RegisterPage -- Registration --> OTPPage((OTP Page))
-        OTPPage -- Verification --> LoginPage
-    end
-
-    LoginPage -- Successful Login/OTP --> HomePage((Home Page))
-    HomePage --- DetailFilmActivity((Detail Film Page))
-    HomePage --- ProfileActivity((Profile Page))
-    HomePage --- HistoryActivity((History Page))
-    ProfileActivity -- Logout --> LoginPage
-```
-
 ## 5. Database Schema
 The application uses an SQLite database with three main tables:
 *   **`users`**: Stores user credentials (ID, phone number, password).
@@ -91,10 +74,3 @@ To set up and run this project locally:
     ```
     (The project currently has a placeholder key which might need to be replaced).
 4.  Build and run the application on an Android emulator (API level 24 or higher) or a physical Android device.
-
-## 8. Screenshots
-*(Placeholder: Consider adding screenshots of key application pages here, such as Login, Home, Film Detail, and History to provide a visual overview.)*
-
-## 9. Author
-This application was developed as a student project for the Mobile Community Solution course.
-*(You can add your name or team name here if desired.)*
