@@ -8,15 +8,24 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.NumberFormat
 import java.util.*
 
+data class Transaction(
+    val id: Int,
+    val userId: Int,
+    val filmId: String,
+    val quantity: Int,
+    val filmTitle: String = "",
+    val filmPrice: Int = 0
+)
+
 class TransactionAdapter(
-    private var transactions: List<Transaction>
+    private var transList: List<Transaction>
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
 
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textViewTransactionFilmTitle: TextView = itemView.findViewById(R.id.textViewTransactionFilmTitle)
-        val textViewTransactionFilmPrice: TextView = itemView.findViewById(R.id.textViewTransactionFilmPrice)
-        val textViewTransactionQuantity: TextView = itemView.findViewById(R.id.textViewTransactionQuantity)
-        val textViewTransactionTotal: TextView = itemView.findViewById(R.id.textViewTransactionTotal)
+        val filmTitle: TextView = itemView.findViewById(R.id.textTransFilmTitle)
+        val filmPrice: TextView = itemView.findViewById(R.id.textTransFilmPrice)
+        val quantity: TextView = itemView.findViewById(R.id.textTransQuantity)
+        val totalPrice: TextView = itemView.findViewById(R.id.textTransTotal)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -25,23 +34,22 @@ class TransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val transaction = transactions[position]
+        val trans = transList[position]
 
-        holder.textViewTransactionFilmTitle.text = transaction.filmTitle
-        holder.textViewTransactionQuantity.text = "Quantity: ${transaction.quantity}"
+        holder.filmTitle.text = trans.filmTitle
+        holder.quantity.text = "Quantity: ${trans.quantity}"
 
-        // Format price to Indonesian Rupiah
         val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        holder.textViewTransactionFilmPrice.text = "Price per item: ${formatter.format(transaction.filmPrice)}"
+        holder.filmPrice.text = "Price: ${formatter.format(trans.filmPrice)}"
 
-        val totalPrice = transaction.filmPrice * transaction.quantity
-        holder.textViewTransactionTotal.text = "Total: ${formatter.format(totalPrice)}"
+        val total = trans.filmPrice * trans.quantity
+        holder.totalPrice.text = "Total: ${formatter.format(total)}"
     }
 
-    override fun getItemCount(): Int = transactions.size
+    override fun getItemCount(): Int = transList.size
 
-    fun updateTransactions(newTransactions: List<Transaction>) {
-        transactions = newTransactions
+    fun updateTransactions(newTrans: List<Transaction>) {
+        transList = newTrans
         notifyDataSetChanged()
     }
 }

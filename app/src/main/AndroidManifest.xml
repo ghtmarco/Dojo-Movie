@@ -2,14 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Network permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <!-- Google Maps permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:allowBackup="true"
@@ -23,12 +21,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC1gIAA3euXYvsfvs9QQwOmweCEctJs6JQ" />
 
-        <!-- Activities -->
         <activity
             android:name=".LoginPage"
             android:exported="true">
@@ -41,6 +37,10 @@
         <activity android:name=".RegisterPage" android:exported="false" />
         <activity android:name=".OtpPage" android:exported="false" />
         <activity android:name=".HomePageActivity" android:exported="false" />
+        <activity android:name=".HistoryActivity" android:exported="false"
+            android:parentActivityName=".HomePageActivity" />
+        <activity android:name=".ProfileActivity" android:exported="false"
+            android:parentActivityName=".HomePageActivity" />
         <activity android:name=".DetailFilmActivity" android:exported="false" />
 
     </application>

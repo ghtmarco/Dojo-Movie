@@ -10,60 +10,62 @@ import androidx.appcompat.app.AppCompatActivity
 
 class OtpPage : AppCompatActivity() {
 
-    private var receivedPhoneNumber: String? = null
-    private var receivedPassword: String? = null
-    private var generatedOtpCode: Int = 0
-    private lateinit var databaseHelper: DatabaseHelper
+    private var userPhone: String? = null
+    private var userPassword: String? = null
+    private var correctOtp: Int = 0
+    private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_otp)
 
-        databaseHelper = DatabaseHelper(this)
+        dbHelper = DatabaseHelper(this)
 
-        receivedPhoneNumber = intent.getStringExtra("phone_number")
-        receivedPassword = intent.getStringExtra("password")
-        generatedOtpCode = intent.getIntExtra("otp_code", 0)
+        userPhone = intent.getStringExtra("phone")
+        userPassword = intent.getStringExtra("password")
+        correctOtp = intent.getIntExtra("otp", 0)
 
-        val editTextOtpCode = findViewById<EditText>(R.id.editTextOtpCode)
-        val buttonVerifyOtp = findViewById<Button>(R.id.buttonVerifyOtp)
-        val textViewOtpInstruction = findViewById<TextView>(R.id.textViewOtpInstruction)
+        val otpInput = findViewById<EditText>(R.id.editTextOtpCode)
+        val verifyBtn = findViewById<Button>(R.id.buttonVerifyOtp)
+        val instruction = findViewById<TextView>(R.id.textViewOtpInstruction)
 
-        // Update instruction text to show phone number
-        textViewOtpInstruction.text = "Masukkan kode OTP yang telah dikirim ke $receivedPhoneNumber"
+        instruction.text = "Masukkan kode OTP yang dikirim ke (650) 555-1212"
 
-        buttonVerifyOtp.setOnClickListener {
-            val enteredOtpText = editTextOtpCode.text.toString().trim()
+        verifyBtn.setOnClickListener {
+            val inputOtp = otpInput.text.toString().trim()
 
-            if (enteredOtpText.isEmpty()) {
+            if (inputOtp.isEmpty()) {
                 Toast.makeText(this, "Kode OTP harus diisi", Toast.LENGTH_SHORT).show()
             } else {
-                val enteredOtpCode = enteredOtpText.toIntOrNull()
+                val enteredOtp = inputOtp.toIntOrNull()
 
-                if (enteredOtpCode == null) {
-                    Toast.makeText(this, "Input OTP tidak valid", Toast.LENGTH_SHORT).show()
-                } else if (enteredOtpCode == generatedOtpCode) {
-                    // OTP verified successfully, save user to database
-                    if (receivedPhoneNumber != null && receivedPassword != null) {
-                        val userId = databaseHelper.insertUser(receivedPhoneNumber!!, receivedPassword!!)
-
-                        if (userId > 0) {
-                            Toast.makeText(this, "Registrasi berhasil! Silakan login.", Toast.LENGTH_SHORT).show()
-
-                            val intent = Intent(this, LoginPage::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
-                            finish()
-                        } else {
-                            Toast.makeText(this, "Gagal menyimpan data pengguna", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(this, "Kesalahan: Data pengguna tidak lengkap", Toast.LENGTH_SHORT).show()
-                    }
+                if (enteredOtp == null) {
+                    Toast.makeText(this, "OTP harus berupa angka", Toast.LENGTH_SHORT).show()
+                } else if (enteredOtp == correctOtp) {
+                    saveUserToDatabase()
                 } else {
                     Toast.makeText(this, "Kode OTP salah", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    private fun saveUserToDatabase() {
+        if (userPhone != null && userPassword != null) {
+            val userId = dbHelper.insertUser(userPhone!!, userPassword!!)
+
+            if (userId > 0) {
+                Toast.makeText(this, "Registrasi berhasil! Silakan login.", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(this, LoginPage::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "Data tidak lengkap", Toast.LENGTH_SHORT).show()
         }
     }
 }

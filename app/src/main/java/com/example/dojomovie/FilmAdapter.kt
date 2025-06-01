@@ -10,15 +10,22 @@ import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
 
+data class Film(
+    val id: String,
+    val title: String,
+    val image: String,
+    val price: Int
+)
+
 class FilmAdapter(
-    private var films: List<Film>,
-    private val onFilmClick: (Film) -> Unit
+    private var filmList: List<Film>,
+    private val onClick: (Film) -> Unit
 ) : RecyclerView.Adapter<FilmAdapter.FilmViewHolder>() {
 
     class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageViewFilmCover: ImageView = itemView.findViewById(R.id.imageViewFilmCover)
-        val textViewFilmTitle: TextView = itemView.findViewById(R.id.textViewFilmTitle)
-        val textViewFilmPrice: TextView = itemView.findViewById(R.id.textViewFilmPrice)
+        val filmCover: ImageView = itemView.findViewById(R.id.imageFilmCover)
+        val filmTitle: TextView = itemView.findViewById(R.id.textFilmTitle)
+        val filmPrice: TextView = itemView.findViewById(R.id.textFilmPrice)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FilmViewHolder {
@@ -27,35 +34,32 @@ class FilmAdapter(
     }
 
     override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
-        val film = films[position]
+        val film = filmList[position]
 
-        holder.textViewFilmTitle.text = film.title
+        holder.filmTitle.text = film.title
 
-        // Format price to Indonesian Rupiah
         val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        holder.textViewFilmPrice.text = formatter.format(film.price)
+        holder.filmPrice.text = formatter.format(film.price)
 
-        // Load image using Glide (fallback to placeholder if Glide not available)
         try {
             Glide.with(holder.itemView.context)
                 .load(film.image)
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .error(R.drawable.ic_launcher_foreground)
-                .into(holder.imageViewFilmCover)
+                .into(holder.filmCover)
         } catch (e: Exception) {
-            // Fallback if Glide is not available
-            holder.imageViewFilmCover.setImageResource(R.drawable.ic_launcher_foreground)
+            holder.filmCover.setImageResource(R.drawable.ic_launcher_foreground)
         }
 
         holder.itemView.setOnClickListener {
-            onFilmClick(film)
+            onClick(film)
         }
     }
 
-    override fun getItemCount(): Int = films.size
+    override fun getItemCount(): Int = filmList.size
 
     fun updateFilms(newFilms: List<Film>) {
-        films = newFilms
+        filmList = newFilms
         notifyDataSetChanged()
     }
 }
