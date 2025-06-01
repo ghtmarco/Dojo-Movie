@@ -24,8 +24,10 @@
         <!-- Status Bar -->
         <item name="android:statusBarColor">@color/primary</item>
         <item name="android:windowLightStatusBar">false</item>
+
         <!-- Navigation Bar -->
         <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o">true</item>
     </style>
 
     <style name="Theme.DojoMovie" parent="Base.Theme.DojoMovie" />
@@ -48,7 +50,8 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="DojoMovie.Text.Subtitle" parent="DojoMovie.Text">        <item name="android:textSize">20sp</item>
+    <style name="DojoMovie.Text.Subtitle" parent="DojoMovie.Text">
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>

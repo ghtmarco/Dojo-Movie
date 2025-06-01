@@ -37,7 +37,10 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+
+    // Material Design 3 - UPDATED VERSION
+    implementation("com.google.android.material:material:1.11.0")
+
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
@@ -52,6 +55,9 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    // Coordinator Layout for Detail Film
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
     // Image Loading
     implementation("com.github.bumptech.glide:glide:4.16.0")

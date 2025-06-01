@@ -1,53 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="@color/white"
+    app:strokeWidth="0dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:background="@color/white"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/textTransFilmTitle"
+        <!-- Transaction Status Icon -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/statusIconContainer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="@color/accent_success"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/statusIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_check_circle"
+                android:contentDescription="Transaction Status" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Transaction Details -->
+        <LinearLayout
+            android:id="@+id/transactionDetails"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@+id/statusIconContainer"
+            app:layout_constraintEnd_toStartOf="@+id/priceDetails"
+            app:layout_constraintTop_toTopOf="@+id/statusIconContainer">
+
+            <!-- Film Title -->
+            <TextView
+                android:id="@+id/textTransFilmTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Film Title"
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Transaction Date -->
+            <TextView
+                android:id="@+id/textTransactionDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dec 15, 2024 • 14:30"
+                android:textSize="12sp"
+                android:textColor="@color/text_hint"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Quantity Info -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_quantity_small"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/textTransQuantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Qty: 1"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Price Details -->
+        <LinearLayout
+            android:id="@+id/priceDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Film Title"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp" />
+            android:orientation="vertical"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/statusIconContainer">
 
+            <!-- Unit Price -->
+            <TextView
+                android:id="@+id/textTransFilmPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rp 75.000"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="2dp" />
+
+            <!-- Total Price -->
+            <TextView
+                android:id="@+id/textTransTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rp 75.000"
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif-black" />
+
+        </LinearLayout>
+
+        <!-- Transaction ID (Small) -->
         <TextView
-            android:id="@+id/textTransFilmPrice"
+            android:id="@+id/textTransactionId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Price: Rp 0"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="4dp" />
+            android:text="TRX-001234"
+            android:textSize="10sp"
+            android:textColor="@color/text_hint"
+            android:fontFamily="monospace"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/transactionDetails"
+            app:layout_constraintTop_toBottomOf="@+id/transactionDetails" />
 
-        <TextView
-            android:id="@+id/textTransQuantity"
+        <!-- Status Badge -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/statusBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Quantity: 0"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="@color/accent_success"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/priceDetails">
 
-        <TextView
-            android:id="@+id/textTransTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Total: Rp 0"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_green_dark" />
+            <TextView
+                android:id="@+id/textTransactionStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Completed"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-medium"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp" />
 
-    </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-</androidx.cardview.widget.CardView>
+        <!-- Divider Line (Optional, for visual separation) -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/white"
+            android:layout_marginTop="12dp"
+            android:alpha="0.3"
+            app:layout_constraintTop_toBottomOf="@+id/textTransactionId"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

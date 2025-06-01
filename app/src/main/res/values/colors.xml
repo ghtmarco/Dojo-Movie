@@ -1,5 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Primary Colors from Logo -->
+    <color name="primary">#E53E3E</color>
+    <color name="primary_dark">#C53030</color>
+    <color name="primary_light">#FC8181</color>
+    <color name="primary_variant">#F56565</color>
+
+    <!-- Secondary Colors -->
+    <color name="secondary">#4A5568</color>
+    <color name="secondary_light">#718096</color>
+    <color name="secondary_dark">#2D3748</color>
+
+    <!-- Background Colors -->
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F7FAFC</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#1A202C</color>
+    <color name="text_secondary">#4A5568</color>
+    <color name="text_hint">#A0AEC0</color>
+    <color name="text_disabled">#CBD5E0</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_success">#38A169</color>
+    <color name="accent_warning">#D69E2E</color>
+    <color name="accent_error">#E53E3E</color>
+    <color name="accent_info">#3182CE</color>
+
+    <!-- Border Colors -->
+    <color name="border">#E2E8F0</color>
+    <color name="border_light">#F1F5F9</color>
+    <color name="divider">#EDF2F7</color>
+
+    <!-- Legacy Colors -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Card and Elevation -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="shadow">#1A202C</color>
 </resources>
