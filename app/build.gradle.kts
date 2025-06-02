@@ -1,16 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-}
-
-// Function to load properties from local.properties
-fun getApiKey(propertyKey: String, project: Project): String {
-    val properties = java.util.Properties()
-    val localPropertiesFile = project.rootProject.file("local.properties")
-    if (localPropertiesFile.exists()) {
-        properties.load(localPropertiesFile.inputStream())
-    }
-    return properties.getProperty(propertyKey, "")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -24,11 +15,6 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Make the API key available as a BuildConfig field
-        buildConfigField("String", "MAPS_API_KEY", "\"${getApiKey("MAPS_API_KEY", project)}\"")
-        // Make the API key available to the Android Manifest
-        manifestPlaceholders["MAPS_API_KEY"] = getApiKey("MAPS_API_KEY", project)
     }
 
     buildTypes {
