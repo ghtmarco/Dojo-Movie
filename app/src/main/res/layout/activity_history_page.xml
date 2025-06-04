@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Header Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerSection"
         android:layout_width="match_parent"
@@ -55,7 +54,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Main Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
@@ -75,7 +73,6 @@
             android:paddingHorizontal="20dp"
             android:paddingBottom="20dp">
 
-            <!-- Filter Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -106,7 +103,6 @@
 
             </LinearLayout>
 
-            <!-- Transaction List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerHistory"
                 android:layout_width="match_parent"
@@ -114,7 +110,6 @@
                 android:nestedScrollingEnabled="false"
                 android:clipToPadding="false" />
 
-            <!-- Empty State -->
             <LinearLayout
                 android:id="@+id/emptyStateLayout"
                 android:layout_width="match_parent"
@@ -153,13 +148,13 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonBrowseMovies"
-                    style="@style/DojoMovie.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:text="Browse Movies"
                     android:textSize="14sp"
                     app:icon="@drawable/ic_movie"
-                    app:iconTint="@color/white" />
+                    app:iconTint="@color/white"
+                    style="@style/Widget.Material3.Button" />
 
             </LinearLayout>
 
@@ -167,108 +162,18 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Enhanced Bottom Navigation -->
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/white"
+        android:background="?attr/colorSurface"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/text_secondary"
+        app:labelVisibilityMode="labeled"
+        app:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
-            android:background="@color/white"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="12dp"
-            android:paddingHorizontal="8dp">
-
-            <!-- Home Tab -->
-            <LinearLayout
-                android:id="@+id/navHome"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="12dp"
-                android:background="?android:attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/home"
-                    android:layout_marginBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Home"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary" />
-
-            </LinearLayout>
-
-            <!-- History Tab (Active) -->
-            <LinearLayout
-                android:id="@+id/navHistory"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="12dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/history"
-                    android:layout_marginBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="History"
-                    android:textSize="12sp"
-                    android:textColor="@color/primary"
-                    android:fontFamily="sans-serif-medium" />
-
-            </LinearLayout>
-
-            <!-- Profile Tab -->
-            <LinearLayout
-                android:id="@+id/navProfile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="12dp"
-                android:background="?android:attr/selectableItemBackground">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/user"
-                    android:layout_marginBottom="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Profile"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

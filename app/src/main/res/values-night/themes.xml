@@ -1,34 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Dark Mode Theme - iOS Style -->
     <style name="Base.Theme.DojoMovie" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary Colors (Dark Mode) -->
         <item name="colorPrimary">@color/dark_primary</item>
         <item name="colorPrimaryVariant">@color/dark_primary_light</item>
         <item name="colorOnPrimary">@color/dark_text_primary</item>
 
-        <!-- Secondary Colors (Dark Mode) -->
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorSecondaryVariant">@color/secondary_dark</item>
         <item name="colorOnSecondary">@color/dark_text_primary</item>
 
-        <!-- Background Colors (Dark Mode) -->
         <item name="android:colorBackground">@color/dark_background</item>
         <item name="colorSurface">@color/dark_surface</item>
         <item name="colorOnBackground">@color/dark_text_primary</item>
         <item name="colorOnSurface">@color/dark_text_primary</item>
 
-        <!-- Error Colors (Dark Mode) -->
         <item name="colorError">@color/dark_accent_error</item>
         <item name="colorOnError">@color/dark_text_primary</item>
 
-        <!-- Status Bar (Dark Mode) -->
         <item name="android:statusBarColor">@color/dark_background</item>
         <item name="android:windowLightStatusBar">false</item>
 
-        <!-- Navigation Bar (Dark Mode) -->
         <item name="android:navigationBarColor">@color/dark_surface</item>
 
-        <!-- Dark Mode Window -->
         <item name="android:windowBackground">@color/dark_background</item>
     </style>
 </resources>

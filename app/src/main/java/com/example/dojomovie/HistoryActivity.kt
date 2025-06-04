@@ -4,12 +4,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HistoryActivity : AppCompatActivity() {
 
@@ -18,6 +17,7 @@ class HistoryActivity : AppCompatActivity() {
     private lateinit var transAdapter: TransactionAdapter
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var prefs: SharedPreferences
+    private lateinit var bottomNavigation: BottomNavigationView
     private val transList = mutableListOf<Transaction>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,24 +42,28 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        val navHome = findViewById<LinearLayout>(R.id.navHome)
-        val navHistory = findViewById<LinearLayout>(R.id.navHistory)
-        val navProfile = findViewById<LinearLayout>(R.id.navProfile)
+        bottomNavigation = findViewById(R.id.bottomNavigation)
+        bottomNavigation.selectedItemId = R.id.nav_history
 
-        navHome.setOnClickListener {
-            val intent = Intent(this, HomePageActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        navHistory.setOnClickListener {
-            Toast.makeText(this, "You are on History", Toast.LENGTH_SHORT).show()
-        }
-
-        navProfile.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
-            finish()
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val intent = Intent(this, HomePageActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                R.id.nav_history -> {
+                    true
+                }
+                R.id.nav_profile -> {
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                else -> false
+            }
         }
     }
 

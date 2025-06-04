@@ -4,8 +4,10 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.*
@@ -13,11 +15,14 @@ import java.util.*
 class DetailFilmActivity : AppCompatActivity() {
 
     private lateinit var filmCover: ImageView
+    private lateinit var filmBackdrop: ImageView
     private lateinit var filmTitle: TextView
     private lateinit var filmPrice: TextView
+    private lateinit var filmSynopsis: TextView
     private lateinit var quantityInput: EditText
     private lateinit var totalPrice: TextView
     private lateinit var buyBtn: Button
+    private lateinit var toolbar: Toolbar
 
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var prefs: SharedPreferences
@@ -28,17 +33,9 @@ class DetailFilmActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_film)
 
-        filmCover = findViewById(R.id.imageViewFilmCover)
-        filmTitle = findViewById(R.id.textViewFilmTitle)
-        filmPrice = findViewById(R.id.textViewFilmPrice)
-        quantityInput = findViewById(R.id.editTextQuantity)
-        totalPrice = findViewById(R.id.textViewTotalPrice)
-        buyBtn = findViewById(R.id.buttonBuy)
-
-        dbHelper = DatabaseHelper(this)
-        prefs = getSharedPreferences("DoJoMoviePrefs", MODE_PRIVATE)
-
-        currentUserId = prefs.getInt("user_id", -1)
+        initViews()
+        setupToolbar()
+        initDatabase()
 
         val filmId = intent.getStringExtra("film_id")
 
@@ -51,9 +48,39 @@ class DetailFilmActivity : AppCompatActivity() {
 
         setupQuantityListener()
         setupBuyButton()
+    }
 
-        supportActionBar?.title = "Film Details"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    private fun initViews() {
+        filmCover = findViewById(R.id.imageViewFilmCover)
+        filmBackdrop = findViewById(R.id.imageViewFilmBackdrop)
+        filmTitle = findViewById(R.id.textViewFilmTitle)
+        filmPrice = findViewById(R.id.textViewFilmPrice)
+        filmSynopsis = findViewById(R.id.textViewSynopsis)
+        quantityInput = findViewById(R.id.editTextQuantity)
+        totalPrice = findViewById(R.id.textViewTotalPrice)
+        buyBtn = findViewById(R.id.buttonBuy)
+        toolbar = findViewById(R.id.toolbar)
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(toolbar)
+
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            title = "Film Details"
+            setDisplayShowTitleEnabled(false)
+        }
+
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
+    }
+
+    private fun initDatabase() {
+        dbHelper = DatabaseHelper(this)
+        prefs = getSharedPreferences("DoJoMoviePrefs", MODE_PRIVATE)
+        currentUserId = prefs.getInt("user_id", -1)
     }
 
     private fun loadFilmDetail(filmId: String) {
@@ -73,21 +100,31 @@ class DetailFilmActivity : AppCompatActivity() {
         val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         filmPrice.text = formatter.format(film.price)
 
+        filmSynopsis.text = film.synopsis
+
+        loadFilmImage(film.image)
+
+        updateTotalPrice()
+    }
+
+    private fun loadFilmImage(imageUrl: String) {
         try {
-            if (film.image.isNotEmpty() && film.image != "pathToImage") {
+            if (imageUrl.isNotEmpty() && imageUrl != "pathToImage") {
                 Glide.with(this)
-                    .load(film.image)
-                    .placeholder(R.drawable.ic_launcher_foreground)
-                    .error(R.drawable.ic_launcher_foreground)
+                    .load(imageUrl)
                     .into(filmCover)
+
+                Glide.with(this)
+                    .load(imageUrl)
+                    .into(filmBackdrop)
             } else {
                 filmCover.setImageResource(R.drawable.ic_launcher_foreground)
+                filmBackdrop.setImageResource(R.drawable.ic_launcher_foreground)
             }
         } catch (e: Exception) {
             filmCover.setImageResource(R.drawable.ic_launcher_foreground)
+            filmBackdrop.setImageResource(R.drawable.ic_launcher_foreground)
         }
-
-        updateTotalPrice()
     }
 
     private fun setupQuantityListener() {
@@ -102,7 +139,7 @@ class DetailFilmActivity : AppCompatActivity() {
 
     private fun updateTotalPrice() {
         val quantityText = quantityInput.text.toString()
-        val quantity = quantityText.toIntOrNull() ?: 0
+        val quantity = quantityText.toIntOrNull() ?: 1
 
         val filmPriceValue = currentFilm?.price ?: 0
 
@@ -143,7 +180,7 @@ class DetailFilmActivity : AppCompatActivity() {
                 val totalAmount = currentFilm!!.price * quantity
 
                 Toast.makeText(this,
-                    "Purchase successful!\n${currentFilm!!.title}\nQuantity: $quantity\nTotal: ${formatter.format(totalAmount)}",
+                    "Purchase successful!\n ${currentFilm!!.title}\n Quantity: $quantity\n Total: ${formatter.format(totalAmount)}",
                     Toast.LENGTH_LONG).show()
                 finish()
             } else {
@@ -155,5 +192,20 @@ class DetailFilmActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 }

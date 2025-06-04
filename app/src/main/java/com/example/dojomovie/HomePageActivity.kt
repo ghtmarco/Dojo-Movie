@@ -41,12 +41,39 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var bottomNavigation: BottomNavigationView
     private val filmList = mutableListOf<Film>()
 
-    // AsyncTask dan Progress Bar
     private var filmLoadTask: FilmLoadTask? = null
     private lateinit var progressBar: ProgressBar
 
     private val API_URL = "https://api.npoint.io/66cce8acb8f366d2a508"
     private val DOJO_LOCATION = LatLng(-6.2088, 106.8456)
+
+    private val filmDataWithPosters = mapOf(
+        "MV001" to FilmData(
+            "Final Fantalion",
+            "https://awsimages.detik.net.id/community/media/visual/2025/03/26/final-destination-bloodlines-1742956382525.webp?w=700&q=90",
+            75000,
+            "A supernatural horror thriller that follows a group of young adults who narrowly escape a catastrophic accident, only to discover that Death itself is hunting them down one by one. With stunning visuals and heart-pounding suspense, this film takes you on a terrifying journey where fate cannot be cheated."
+        ),
+        "MV002" to FilmData(
+            "Kongzilla",
+            "https://images-cdn.ubuy.co.in/633f9cdb6c083a361b7bb6c7-ubuy-online-shopping.jpg",
+            85000,
+            "An epic monster showdown featuring the legendary King Kong and the mighty Godzilla as they face off in an ultimate battle for supremacy. When ancient titans emerge to threaten humanity, only these colossal beasts can determine the fate of our world in this action-packed blockbuster."
+        ),
+        "MV003" to FilmData(
+            "Bond Jampshoot",
+            "https://www.postershop.cz/files/e/52494/plakat-james-bond-no-time-to-die-azure-teaser.jpeg",
+            95000,
+            "In this explosive action thriller, Agent 007 faces his most dangerous mission yet as he infiltrates a high-stakes criminal organization. With cutting-edge gadgets, exotic locations, and intense chase sequences, Bond must save the world from a diabolical plot that threatens global security."
+        )
+    )
+
+    data class FilmData(
+        val title: String,
+        val posterUrl: String,
+        val price: Int,
+        val synopsis: String
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +89,6 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
         requestQueue = Volley.newRequestQueue(this)
 
-        // Load films with AsyncTask
         loadFilmsWithAsyncTask()
     }
 
@@ -86,18 +112,19 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    // Already on home, do nothing or scroll to top
                     filmRecycler.smoothScrollToPosition(0)
                     true
                 }
                 R.id.nav_history -> {
                     val intent = Intent(this, HistoryActivity::class.java)
                     startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.nav_profile -> {
                     val intent = Intent(this, ProfileActivity::class.java)
                     startActivity(intent)
+                    finish()
                     true
                 }
                 else -> false
@@ -187,15 +214,47 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
                 } catch (e: JSONException) {
                     e.printStackTrace()
                     Toast.makeText(this, "JSON parsing error", Toast.LENGTH_SHORT).show()
+                    loadLocalFilms()
                 }
             },
             { error ->
                 Log.e("Volley error", error.toString())
-                Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Network error, loading internal data...", Toast.LENGTH_SHORT).show()
+                loadInternalFilmData()
             }
         )
 
         requestQueue.add(request)
+    }
+
+    private fun loadInternalFilmData() {
+        val internalFilms = ArrayList<Film>()
+
+        filmDataWithPosters.forEach { (id, filmData) ->
+            internalFilms.add(Film(id, filmData.title, filmData.posterUrl, filmData.price, filmData.synopsis))
+        }
+
+        filmList.clear()
+        filmList.addAll(internalFilms)
+
+        internalFilms.forEach { film ->
+            dbHelper.insertFilm(film)
+        }
+
+        filmAdapter.notifyDataSetChanged()
+        Toast.makeText(this, "${filmList.size} films loaded from internal data", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun loadLocalFilms() {
+        val localFilms = dbHelper.getAllFilms()
+        if (localFilms.isNotEmpty()) {
+            filmList.clear()
+            filmList.addAll(localFilms)
+            filmAdapter.notifyDataSetChanged()
+            Toast.makeText(this, "Loaded ${localFilms.size} cached films", Toast.LENGTH_SHORT).show()
+        } else {
+            loadInternalFilmData()
+        }
     }
 
     private fun parseJSON(jsonArray: JSONArray): ArrayList<Film> {
@@ -205,11 +264,19 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
                 val filmObject = jsonArray.getJSONObject(i)
 
                 val id = filmObject.getString("id")
-                val title = filmObject.getString("title")
-                val image = filmObject.getString("image")
-                val price = filmObject.getInt("price")
+                var title = filmObject.getString("title")
+                var image = filmObject.getString("image")
+                var price = filmObject.getInt("price")
+                var synopsis = "An exciting movie experience that will keep you entertained from start to finish."
 
-                filmList.add(Film(id, title, image, price))
+                filmDataWithPosters[id]?.let { filmData ->
+                    title = filmData.title
+                    image = filmData.posterUrl
+                    price = filmData.price
+                    synopsis = filmData.synopsis
+                }
+
+                filmList.add(Film(id, title, image, price, synopsis))
             }
         } catch (e: JSONException) {
             e.printStackTrace()
@@ -217,13 +284,11 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         return filmList
     }
 
-    // AsyncTask inner class
     inner class FilmLoadTask : android.os.AsyncTask<Void, Int, Boolean>() {
         override fun doInBackground(vararg params: Void?): Boolean {
             return try {
-                // Simulate loading process with progress
                 for (i in 0..100 step 10) {
-                    Thread.sleep(200) // Simulate work
+                    Thread.sleep(200)
                     publishProgress(i)
                 }
                 true
@@ -241,7 +306,7 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         override fun onPostExecute(result: Boolean) {
             progressBar.visibility = View.GONE
             if (result) {
-                loadFilms() // Load actual data after simulation
+                loadFilms()
             } else {
                 Toast.makeText(this@HomePageActivity, "Failed to load films", Toast.LENGTH_SHORT).show()
             }

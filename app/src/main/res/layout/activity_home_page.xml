@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="?attr/android:colorBackground">
 
-    <!-- Main Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
@@ -24,7 +23,6 @@
             android:paddingHorizontal="20dp"
             android:paddingBottom="20dp">
 
-            <!-- Header Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,7 +30,6 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="24dp">
 
-                <!-- App Logo -->
                 <ImageView
                     android:id="@+id/appLogo"
                     android:layout_width="40dp"
@@ -41,7 +38,6 @@
                     android:scaleType="centerInside"
                     android:layout_marginEnd="12dp" />
 
-                <!-- Title and Subtitle -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -53,7 +49,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="DoJo Movie"
-                        style="@style/DojoMovie.Text.Title2"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-medium"
                         android:textColor="?attr/colorOnSurface" />
 
                     <TextView
@@ -61,14 +58,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Discover amazing movies"
-                        style="@style/DojoMovie.Text.Caption1"
+                        android:textSize="12sp"
                         android:textColor="@color/text_secondary" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Location Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,15 +75,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Location"
-                    style="@style/DojoMovie.Text.Title3"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium"
                     android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="12dp" />
 
-                <!-- Map Container -->
                 <androidx.cardview.widget.CardView
-                    style="@style/DojoMovie.Card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/surface">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -105,7 +103,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="DoJo Movie Store - Jakarta"
-                            style="@style/DojoMovie.Text.Caption1"
+                            android:textSize="12sp"
                             android:textColor="@color/text_secondary"
                             android:layout_gravity="center_horizontal"
                             android:padding="12dp" />
@@ -116,7 +114,6 @@
 
             </LinearLayout>
 
-            <!-- Films Section Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,14 +126,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Available Films"
-                    style="@style/DojoMovie.Text.Title3"
+                    android:textSize="20sp"
+                    android:fontFamily="sans-serif-medium"
                     android:textColor="?attr/colorOnSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="See All"
-                    style="@style/DojoMovie.Text.Body"
+                    android:textSize="17sp"
                     android:textColor="?attr/colorPrimary"
                     android:background="?android:attr/selectableItemBackground"
                     android:padding="8dp"
@@ -145,7 +143,6 @@
 
             </LinearLayout>
 
-            <!-- Loading Progress -->
             <ProgressBar
                 android:id="@+id/progressBarFilms"
                 style="?android:attr/progressBarStyleHorizontal"
@@ -157,7 +154,6 @@
                 android:max="100"
                 android:progress="0" />
 
-            <!-- Films RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerFilms"
                 android:layout_width="match_parent"
@@ -169,15 +165,14 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorSurface"
         app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/bottom_nav_color"
-        app:itemTextColor="@color/bottom_nav_color"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/text_secondary"
         app:labelVisibilityMode="labeled"
         app:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

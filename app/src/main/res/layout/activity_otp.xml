@@ -8,7 +8,6 @@
     android:background="@color/background"
     tools:context=".OtpPage">
 
-    <!-- Background Gradient Overlay -->
     <View
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -17,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Main Content Container -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardContainer"
         android:layout_width="0dp"
@@ -37,7 +35,6 @@
             android:orientation="vertical"
             android:padding="32dp">
 
-            <!-- Logo -->
             <ImageView
                 android:id="@+id/imageViewLogo"
                 android:layout_width="80dp"
@@ -47,7 +44,6 @@
                 android:src="@drawable/otp"
                 android:scaleType="centerInside" />
 
-            <!-- Header Text -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,7 +66,6 @@
                 android:layout_marginBottom="32dp"
                 android:lineSpacingExtra="4dp" />
 
-            <!-- OTP Input Container -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,15 +73,14 @@
                 android:gravity="center"
                 android:layout_marginBottom="24dp">
 
-                <!-- Individual OTP digits would go here, but for simplicity using single input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutOtp"
-                    style="@style/DojoMovie.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Enter OTP Code"
                     app:startIconDrawable="@drawable/ic_security"
-                    app:startIconTint="@color/text_hint">
+                    app:startIconTint="@color/text_hint"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextOtpCode"
@@ -103,7 +97,6 @@
 
             </LinearLayout>
 
-            <!-- Timer and Resend -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -134,10 +127,8 @@
 
             </LinearLayout>
 
-            <!-- Verify Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonVerifyOtp"
-                style="@style/DojoMovie.Button"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginBottom="20dp"
@@ -145,9 +136,9 @@
                 android:textSize="16sp"
                 app:icon="@drawable/ic_check"
                 app:iconGravity="end"
-                app:iconTint="@color/white" />
+                app:iconTint="@color/white"
+                style="@style/Widget.Material3.Button" />
 
-            <!-- Support Text -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -162,7 +153,6 @@
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Footer -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

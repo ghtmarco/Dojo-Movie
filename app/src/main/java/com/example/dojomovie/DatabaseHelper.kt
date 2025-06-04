@@ -5,10 +5,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", null, 1) {
+class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", null, 2) {
 
     override fun onCreate(db: SQLiteDatabase?) {
-        // IKUTI DEMO DOSEN: Create table query pattern
         val queryCreateUsersTable = "CREATE TABLE IF NOT EXISTS users(" +
                 "user_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                 "phone_number VARCHAR(255) NOT NULL," +
@@ -19,7 +18,8 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
                 "film_id VARCHAR(255) NOT NULL PRIMARY KEY," +
                 "film_title VARCHAR(255) NOT NULL," +
                 "film_image VARCHAR(255) NOT NULL," +
-                "film_price INTEGER NOT NULL" +
+                "film_price INTEGER NOT NULL," +
+                "film_synopsis TEXT DEFAULT 'An exciting movie experience that will keep you entertained from start to finish.'" +
                 ")"
 
         val queryCreateTransactionsTable = "CREATE TABLE IF NOT EXISTS transactions(" +
@@ -35,14 +35,11 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // IKUTI DEMO DOSEN: Drop dan onCreate
-        db?.execSQL("DROP TABLE IF EXISTS transactions")
-        db?.execSQL("DROP TABLE IF EXISTS films")
-        db?.execSQL("DROP TABLE IF EXISTS users")
-        onCreate(db)
+        if (oldVersion < 2) {
+            db?.execSQL("ALTER TABLE films ADD COLUMN film_synopsis TEXT DEFAULT 'An exciting movie experience that will keep you entertained from start to finish.'")
+        }
     }
 
-    // USER OPERATIONS - IKUTI PATTERN DEMO DOSEN
     fun createUser(phone: String, password: String) {
         var db = writableDatabase
         var values = ContentValues().apply {
@@ -90,7 +87,6 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
         db.close()
     }
 
-    // FILM OPERATIONS - IKUTI PATTERN DEMO DOSEN
     fun createFilm(film: Film) {
         var db = writableDatabase
         var values = ContentValues().apply {
@@ -98,8 +94,9 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
             put("film_title", film.title)
             put("film_image", film.image)
             put("film_price", film.price)
+            put("film_synopsis", film.synopsis)
         }
-        db.insert("films", null, values)
+        db.insertWithOnConflict("films", null, values, SQLiteDatabase.CONFLICT_REPLACE)
         db.close()
     }
 
@@ -116,7 +113,14 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
                 var title = cursor.getString(cursor.getColumnIndexOrThrow("film_title"))
                 var image = cursor.getString(cursor.getColumnIndexOrThrow("film_image"))
                 var price = cursor.getInt(cursor.getColumnIndexOrThrow("film_price"))
-                result.add(Film(id, title, image, price))
+
+                var synopsis = try {
+                    cursor.getString(cursor.getColumnIndexOrThrow("film_synopsis"))
+                } catch (e: Exception) {
+                    "An exciting movie experience that will keep you entertained from start to finish."
+                }
+
+                result.add(Film(id, title, image, price, synopsis))
             } while (cursor.moveToNext())
         }
 
@@ -131,6 +135,7 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
             put("film_title", film.title)
             put("film_image", film.image)
             put("film_price", film.price)
+            put("film_synopsis", film.synopsis)
         }
         db.update("films", values, "film_id = ?", arrayOf(film.id))
         db.close()
@@ -142,7 +147,6 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
         db.close()
     }
 
-    // TRANSACTION OPERATIONS - IKUTI PATTERN DEMO DOSEN
     fun createTransaction(userId: Int, filmId: String, quantity: Int) {
         var db = writableDatabase
         var values = ContentValues().apply {
@@ -193,7 +197,6 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
         db.close()
     }
 
-    // KEEP existing methods untuk compatibility dengan project DoJo Movie
     fun insertUser(phone: String, password: String): Long {
         createUser(phone, password)
         return 1
@@ -263,7 +266,14 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
             val title = cursor.getString(cursor.getColumnIndexOrThrow("film_title"))
             val image = cursor.getString(cursor.getColumnIndexOrThrow("film_image"))
             val price = cursor.getInt(cursor.getColumnIndexOrThrow("film_price"))
-            film = Film(id, title, image, price)
+
+            val synopsis = try {
+                cursor.getString(cursor.getColumnIndexOrThrow("film_synopsis"))
+            } catch (e: Exception) {
+                "An exciting movie experience that will keep you entertained from start to finish."
+            }
+
+            film = Film(id, title, image, price, synopsis)
         }
 
         cursor.close()
@@ -310,5 +320,4 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", n
     }
 }
 
-// SIMPLE data class sesuai demo dosen
 data class User(val id: String, val phone: String, val password: String)

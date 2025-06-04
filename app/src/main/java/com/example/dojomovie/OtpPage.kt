@@ -23,7 +23,6 @@ class OtpPage : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
-        // Get data from intent
         userPhone = intent.getStringExtra("phone")
         userPassword = intent.getStringExtra("password")
         correctOtp = intent.getIntExtra("otp", 0)
@@ -34,13 +33,11 @@ class OtpPage : AppCompatActivity() {
         val verifyBtn = findViewById<Button>(R.id.buttonVerifyOtp)
         val instruction = findViewById<TextView>(R.id.textViewOtpInstruction)
 
-        // Update instruction text
         instruction.text = "Enter the 6-digit code sent to\n$userPhone"
 
         verifyBtn.setOnClickListener {
             val inputOtp = otpInput.text.toString().trim()
 
-            // IKUTI SOAL: Validate that OTP EditText must be filled
             if (inputOtp.isEmpty()) {
                 Toast.makeText(this, "OTP Code must be filled", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -53,17 +50,13 @@ class OtpPage : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // IKUTI SOAL: Validate that the code typed by user must be same as OTP Code in SMS
             if (enteredOtp == correctOtp) {
                 if (isLogin) {
-                    // For LOGIN flow: OTP verified -> go to Home Page
                     proceedToHome()
                 } else {
-                    // For REGISTER flow: OTP verified -> save user to database -> go to Login Page
                     saveUserAndGoToLogin()
                 }
             } else {
-                // IKUTI SOAL: If OTP Code is not valid, show error message using Toast
                 Toast.makeText(this, "Invalid OTP Code", Toast.LENGTH_SHORT).show()
             }
         }
@@ -80,13 +73,11 @@ class OtpPage : AppCompatActivity() {
 
     private fun saveUserAndGoToLogin() {
         if (userPhone != null && userPassword != null) {
-            // IKUTI SOAL: "create a user with the credential from Register Page and save it to the database"
             val newUserId = dbHelper.insertUser(userPhone!!, userPassword!!)
 
             if (newUserId > 0) {
                 Toast.makeText(this, "Registration successful! Please log in.", Toast.LENGTH_SHORT).show()
 
-                // IKUTI SOAL: "then redirect the user to the Login Page"
                 val intent = Intent(this, LoginPage::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)

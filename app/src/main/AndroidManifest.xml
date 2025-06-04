@@ -9,8 +9,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
@@ -23,29 +25,66 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DojoMovie"
         android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
         tools:targetApi="31">
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
 
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".SearchableActivity" />
+
         <activity
             android:name=".LoginPage"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".RegisterPage" android:exported="false" />
-        <activity android:name=".OtpPage" android:exported="false" />
-        <activity android:name=".HomePageActivity" android:exported="false" />
-        <activity android:name=".HistoryActivity" android:exported="false"
+        <activity
+            android:name=".RegisterPage"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".LoginPage" />
+
+        <activity
+            android:name=".OtpPage"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".HomePageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
             android:parentActivityName=".HomePageActivity" />
-        <activity android:name=".ProfileActivity" android:exported="false"
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
             android:parentActivityName=".HomePageActivity" />
-        <activity android:name=".DetailFilmActivity" android:exported="false" />
+
+        <activity
+            android:name=".DetailFilmActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".HomePageActivity"
+            android:theme="@style/Theme.DojoMovie" />
 
     </application>
 

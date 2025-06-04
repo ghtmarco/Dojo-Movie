@@ -7,8 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import java.text.NumberFormat
 import java.util.*
 
@@ -16,7 +14,8 @@ data class Film(
     val id: String,
     val title: String,
     val image: String,
-    val price: Int
+    val price: Int,
+    val synopsis: String = "An exciting movie experience that will keep you entertained from start to finish."
 )
 
 class FilmAdapter(
@@ -40,43 +39,15 @@ class FilmAdapter(
 
         holder.filmTitle.text = film.title
 
-        // Format price in Indonesian Rupiah
         val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         holder.filmPrice.text = formatter.format(film.price)
 
-        // PERBAIKAN: Handle movie poster images from URL
-        loadMoviePoster(holder.filmCover, film.image)
+        Glide.with(holder.filmCover.context)
+            .load(film.image)
+            .into(holder.filmCover)
 
         holder.itemView.setOnClickListener {
             onClick(film)
-        }
-    }
-
-    private fun loadMoviePoster(imageView: ImageView, imageUrl: String) {
-        try {
-            // Check if we have a valid URL (not empty and not placeholder)
-            if (imageUrl.isNotEmpty() &&
-                imageUrl != "pathToImage" &&
-                (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
-
-                // Load image from URL with Glide - optimized for movie posters
-                Glide.with(imageView.context)
-                    .load(imageUrl)
-                    .apply(
-                        RequestOptions()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .centerCrop()
-                            .placeholder(R.drawable.ic_movie_placeholder)
-                            .error(R.drawable.ic_movie_placeholder)
-                    )
-                    .into(imageView)
-            } else {
-                // Use placeholder for invalid URLs
-                imageView.setImageResource(R.drawable.ic_movie_placeholder)
-            }
-        } catch (e: Exception) {
-            // Fallback to placeholder on any error
-            imageView.setImageResource(R.drawable.ic_movie_placeholder)
         }
     }
 

@@ -20,7 +20,6 @@ class RegisterPage : AppCompatActivity() {
     private lateinit var smsManager: SmsManager
     private val SMS_PERMISSION = 101
 
-    // Views
     private lateinit var phoneInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var confirmInput: EditText
@@ -53,34 +52,28 @@ class RegisterPage : AppCompatActivity() {
             val password = passwordInput.text.toString().trim()
             val confirm = confirmInput.text.toString().trim()
 
-            // IKUTI SOAL: Validate that all fields must be filled
             if (phone.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
                 Toast.makeText(this, "All fields must be filled", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // IKUTI SOAL: Validate that phone number must be unique and not registered by other users
             if (dbHelper.isPhoneRegistered(phone)) {
                 Toast.makeText(this, "Phone number must be unique and not registered by other users", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // IKUTI SOAL: Validate that password's length of at least 8 characters
             if (password.length < 8) {
                 Toast.makeText(this, "Password's length must be at least 8 characters", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // IKUTI SOAL: Validate that password and confirm password is the same
             if (password != confirm) {
                 Toast.makeText(this, "Password and confirm password must be the same", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // IKUTI SOAL: Generate the OTP Code by random six numbers
             val otpCode = Random.nextInt(100000, 999999)
 
-            // IKUTI SOAL: Send it to the user's input phone number and redirect user to OTP Page
             sendOtpAndRedirect(otpCode, phone, password)
         }
 
@@ -103,29 +96,24 @@ class RegisterPage : AppCompatActivity() {
         try {
             val message = "DoJo Movie OTP: $otpCode"
 
-            // IKUTI SOAL: Send OTP to user's phone number
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 == PackageManager.PERMISSION_GRANTED) {
 
-                // Send SMS to the user's phone number
                 smsManager.sendTextMessage(phone, null, message, null, null)
                 Toast.makeText(this, "OTP sent to $phone", Toast.LENGTH_LONG).show()
             } else {
-                // For demo purposes, show OTP in toast
                 Toast.makeText(this, "Demo: OTP Code is $otpCode", Toast.LENGTH_LONG).show()
             }
 
-            // IKUTI SOAL: Redirect user to OTP Page
             val intent = Intent(this, OtpPage::class.java)
             intent.putExtra("phone", phone)
             intent.putExtra("password", password)
             intent.putExtra("otp", otpCode)
-            intent.putExtra("is_login", false) // This is registration flow
+            intent.putExtra("is_login", false)
             startActivity(intent)
             finish()
 
         } catch (e: Exception) {
-            // Fallback: show OTP and proceed anyway
             Toast.makeText(this, "Demo: OTP Code is $otpCode", Toast.LENGTH_LONG).show()
 
             val intent = Intent(this, OtpPage::class.java)

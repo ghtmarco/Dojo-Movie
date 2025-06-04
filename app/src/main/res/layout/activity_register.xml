@@ -7,7 +7,6 @@
     android:background="?attr/colorSurface"
     tools:context=".RegisterPage">
 
-    <!-- Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +18,6 @@
             android:minHeight="0dp"
             android:padding="24dp">
 
-            <!-- Logo Section -->
             <LinearLayout
                 android:id="@+id/logoSection"
                 android:layout_width="wrap_content"
@@ -32,7 +30,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-                <!-- App Logo -->
                 <ImageView
                     android:id="@+id/imageViewLogo"
                     android:layout_width="80dp"
@@ -41,27 +38,27 @@
                     android:scaleType="centerInside"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Title -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Create Account"
-                    style="@style/DojoMovie.Text.LargeTitle"
+                    android:textSize="34sp"
+                    android:fontFamily="sans-serif"
+                    android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="8dp" />
 
-                <!-- Subtitle -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Join DoJo Movie and discover amazing films"
-                    style="@style/DojoMovie.Text.Subhead"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif"
                     android:textColor="@color/text_secondary"
                     android:textAlignment="center" />
 
             </LinearLayout>
 
-            <!-- Register Form -->
             <LinearLayout
                 android:id="@+id/registerForm"
                 android:layout_width="match_parent"
@@ -72,14 +69,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-                <!-- Phone Number Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutPhone"
-                    style="@style/DojoMovie.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:hint="Phone Number">
+                    android:hint="Phone Number"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextRegisterPhoneNumber"
@@ -92,17 +88,16 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Password Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutPassword"
-                    style="@style/DojoMovie.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:hint="Password"
                     app:endIconMode="password_toggle"
                     app:helperText="Minimum 8 characters"
-                    app:helperTextTextColor="@color/text_hint">
+                    app:helperTextTextColor="@color/text_hint"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextRegisterPassword"
@@ -115,15 +110,14 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Confirm Password Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutConfirmPassword"
-                    style="@style/DojoMovie.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     android:hint="Confirm Password"
-                    app:endIconMode="password_toggle">
+                    app:endIconMode="password_toggle"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/editTextConfirmPassword"
@@ -136,24 +130,23 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Register Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonRegister"
-                    style="@style/DojoMovie.Button"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginBottom="24dp"
                     android:text="Create Account"
-                    android:textSize="17sp" />
+                    android:textSize="17sp"
+                    style="@style/Widget.Material3.Button" />
 
-                <!-- Login Link -->
                 <TextView
                     android:id="@+id/textViewLoginLink"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="Already have an account? Sign in"
-                    style="@style/DojoMovie.Text.Body"
+                    android:textSize="17sp"
+                    android:fontFamily="sans-serif"
                     android:textColor="?attr/colorPrimary"
                     android:clickable="true"
                     android:focusable="true"
@@ -162,12 +155,12 @@
 
             </LinearLayout>
 
-            <!-- Footer -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="DoJo Movie v1.0"
-                style="@style/DojoMovie.Text.Caption2"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif"
                 android:textColor="@color/text_hint"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="24dp"

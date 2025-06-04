@@ -5,10 +5,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -16,6 +16,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var logoutBtn: Button
     private lateinit var prefs: SharedPreferences
     private lateinit var dbHelper: DatabaseHelper
+    private lateinit var bottomNavigation: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,24 +34,28 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        val navHome = findViewById<LinearLayout>(R.id.navHome)
-        val navHistory = findViewById<LinearLayout>(R.id.navHistory)
-        val navProfile = findViewById<LinearLayout>(R.id.navProfile)
+        bottomNavigation = findViewById(R.id.bottomNavigation)
+        bottomNavigation.selectedItemId = R.id.nav_profile
 
-        navHome.setOnClickListener {
-            val intent = Intent(this, HomePageActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        navHistory.setOnClickListener {
-            val intent = Intent(this, HistoryActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        navProfile.setOnClickListener {
-            Toast.makeText(this, "You are on Profile", Toast.LENGTH_SHORT).show()
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    val intent = Intent(this, HomePageActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                R.id.nav_history -> {
+                    val intent = Intent(this, HistoryActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                    true
+                }
+                R.id.nav_profile -> {
+                    true
+                }
+                else -> false
+            }
         }
     }
 
@@ -60,10 +65,8 @@ class ProfileActivity : AppCompatActivity() {
         if (userId != -1) {
             val userPhone = dbHelper.getUserPhone(userId)
             if (userPhone != null) {
-                // Update kedua TextView untuk phone number
                 phoneText.text = userPhone
 
-                // Update juga textPhoneNumberDetail jika ada
                 val phoneDetailText = findViewById<TextView>(R.id.textPhoneNumberDetail)
                 phoneDetailText?.text = userPhone
             } else {

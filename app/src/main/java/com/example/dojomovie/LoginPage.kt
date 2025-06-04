@@ -35,30 +35,25 @@ class LoginPage : AppCompatActivity() {
         val loginBtn = findViewById<Button>(R.id.buttonLogin)
         val registerLink = findViewById<TextView>(R.id.textViewRegisterLink)
 
-        // Check SMS permission
         checkSmsPermission()
 
         loginBtn.setOnClickListener {
             val phone = phoneInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
-            // IKUTI SOAL: Validate phone number must be filled
             if (phone.isEmpty()) {
                 Toast.makeText(this, "Phone number must be filled", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // IKUTI SOAL: Validate password must be filled
             if (password.isEmpty()) {
                 Toast.makeText(this, "Password must be filled", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // IKUTI SOAL: Validate phone number and password are registered in database
             val userId = dbHelper.checkUserLogin(phone, password)
 
             if (userId != null) {
-                // Save login session
                 with(prefs.edit()) {
                     putInt("user_id", userId)
                     putString("phone_number", phone)
@@ -66,11 +61,9 @@ class LoginPage : AppCompatActivity() {
                     apply()
                 }
 
-                // GENERATE REAL OTP for login verification
                 val otpCode = Random.nextInt(100000, 999999)
                 sendLoginOtpAndRedirect(otpCode, phone, password, userId)
             } else {
-                // IKUTI SOAL: If validation fails, show error message using Toast
                 Toast.makeText(this, "Phone number and password are not registered", Toast.LENGTH_SHORT).show()
             }
         }
@@ -93,30 +86,25 @@ class LoginPage : AppCompatActivity() {
         try {
             val message = "DoJo Movie Login OTP: $otpCode"
 
-            // Send real OTP to user's phone number
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 == PackageManager.PERMISSION_GRANTED) {
 
-                // Send SMS to the user's phone number
                 smsManager.sendTextMessage(phone, null, message, null, null)
                 Toast.makeText(this, "Login OTP sent to $phone", Toast.LENGTH_LONG).show()
             } else {
-                // For demo purposes, show OTP in toast
                 Toast.makeText(this, "Demo: Login OTP Code is $otpCode", Toast.LENGTH_LONG).show()
             }
 
-            // IKUTI SOAL: "Redirect the logged-in user to the OTP page"
             val intent = Intent(this, OtpPage::class.java)
             intent.putExtra("phone", phone)
             intent.putExtra("password", password)
-            intent.putExtra("otp", otpCode) // Real OTP for login verification
-            intent.putExtra("is_login", true) // Flag untuk membedakan login vs register
-            intent.putExtra("user_id", userId) // Pass user ID
+            intent.putExtra("otp", otpCode)
+            intent.putExtra("is_login", true)
+            intent.putExtra("user_id", userId)
             startActivity(intent)
             finish()
 
         } catch (e: Exception) {
-            // Fallback: show OTP and proceed anyway
             Toast.makeText(this, "Demo: Login OTP Code is $otpCode", Toast.LENGTH_LONG).show()
 
             val intent = Intent(this, OtpPage::class.java)

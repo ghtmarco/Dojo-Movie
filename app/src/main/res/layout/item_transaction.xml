@@ -16,7 +16,6 @@
         android:background="@color/white"
         android:padding="16dp">
 
-        <!-- Transaction Status Icon -->
         <androidx.cardview.widget.CardView
             android:id="@+id/statusIconContainer"
             android:layout_width="40dp"
@@ -37,7 +36,6 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Transaction Details -->
         <LinearLayout
             android:id="@+id/transactionDetails"
             android:layout_width="0dp"
@@ -49,7 +47,6 @@
             app:layout_constraintEnd_toStartOf="@+id/priceDetails"
             app:layout_constraintTop_toTopOf="@+id/statusIconContainer">
 
-            <!-- Film Title -->
             <TextView
                 android:id="@+id/textTransFilmTitle"
                 android:layout_width="match_parent"
@@ -62,7 +59,6 @@
                 android:ellipsize="end"
                 android:layout_marginBottom="4dp" />
 
-            <!-- Transaction Date -->
             <TextView
                 android:id="@+id/textTransactionDate"
                 android:layout_width="wrap_content"
@@ -72,7 +68,6 @@
                 android:textColor="@color/text_hint"
                 android:layout_marginBottom="4dp" />
 
-            <!-- Quantity Info -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -97,7 +92,6 @@
 
         </LinearLayout>
 
-        <!-- Price Details -->
         <LinearLayout
             android:id="@+id/priceDetails"
             android:layout_width="wrap_content"
@@ -107,7 +101,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/statusIconContainer">
 
-            <!-- Unit Price -->
             <TextView
                 android:id="@+id/textTransFilmPrice"
                 android:layout_width="wrap_content"
@@ -117,7 +110,6 @@
                 android:textColor="@color/text_secondary"
                 android:layout_marginBottom="2dp" />
 
-            <!-- Total Price -->
             <TextView
                 android:id="@+id/textTransTotal"
                 android:layout_width="wrap_content"
@@ -129,7 +121,6 @@
 
         </LinearLayout>
 
-        <!-- Transaction ID (Small) -->
         <TextView
             android:id="@+id/textTransactionId"
             android:layout_width="wrap_content"
@@ -142,7 +133,6 @@
             app:layout_constraintStart_toStartOf="@+id/transactionDetails"
             app:layout_constraintTop_toBottomOf="@+id/transactionDetails" />
 
-        <!-- Status Badge -->
         <androidx.cardview.widget.CardView
             android:id="@+id/statusBadge"
             android:layout_width="wrap_content"
@@ -167,7 +157,6 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Divider Line (Optional, for visual separation) -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

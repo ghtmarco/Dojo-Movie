@@ -8,7 +8,6 @@ android {
     namespace = "com.example.dojomovie"
     compileSdk = 35
 
-    // TAMBAH: View Binding seperti demo dosen Sesi 8
     buildFeatures {
         viewBinding = true
     }
@@ -46,24 +45,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-
-    // Network & Data
-    implementation("com.android.volley:volley:1.2.1")
-
-    // Google Maps & Location
+    implementation(libs.volley)
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-
-    // UI Components
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("androidx.cardview:cardview:1.0.0")
-    implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-
-    // Image Loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
-
-    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
