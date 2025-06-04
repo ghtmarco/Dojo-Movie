@@ -2,21 +2,28 @@ package com.example.dojomovie
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import org.json.JSONArray
@@ -29,8 +36,13 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var prefs: SharedPreferences
     private lateinit var requestQueue: RequestQueue
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var myMap: GoogleMap
     private val filmList = mutableListOf<Film>()
-    private var map: GoogleMap? = null
+
+    // TAMBAH: AsyncTask dan Progress Bar seperti demo dosen
+    private var filmLoadTask: FilmLoadTask? = null
+    private lateinit var progressBar: ProgressBar
 
     private val API_URL = "https://api.npoint.io/66cce8acb8f366d2a508"
     private val DOJO_LOCATION = LatLng(-6.2088, 106.8456)
@@ -41,19 +53,24 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
         dbHelper = DatabaseHelper(this)
         prefs = getSharedPreferences("DoJoMoviePrefs", MODE_PRIVATE)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         setupViews()
         setupBottomNavigation()
         setupMap()
 
-        // Inisialisasi requestQueue dan load films - ikuti cara dosen
         requestQueue = Volley.newRequestQueue(this)
-        loadFilms()
+
+        // TAMBAH: Inisialisasi AsyncTask seperti demo dosen
+        loadFilmsWithAsyncTask()
     }
 
     private fun setupViews() {
         filmRecycler = findViewById(R.id.recyclerFilms)
         filmRecycler.layoutManager = LinearLayoutManager(this)
+
+        // TAMBAH: Progress bar setup (perlu ditambah ke layout juga)
+        // progressBar = findViewById(R.id.progressBarFilms)
 
         filmAdapter = FilmAdapter(filmList) { film ->
             val intent = Intent(this, DetailFilmActivity::class.java)
@@ -84,24 +101,69 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupMap() {
+        checkLocationPermission()
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
+    private fun checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
 
-        map?.addMarker(
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        myMap = googleMap
+
+        val cameraPosition = CameraPosition.builder()
+            .target(DOJO_LOCATION)
+            .zoom(17.0f)
+            .tilt(45.0f)
+            .build()
+
+        myMap.addMarker(
             MarkerOptions()
                 .position(DOJO_LOCATION)
                 .title("DoJo Movie")
         )
 
-        map?.animateCamera(CameraUpdateFactory.newLatLngZoom(DOJO_LOCATION, 15f))
+        myMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        myMap.isBuildingsEnabled = true
+
         Toast.makeText(this, "DoJo Movie location loaded", Toast.LENGTH_SHORT).show()
     }
 
-    // Ikuti struktur demo dosen - mirip dengan MainActivity.kt dosen
+    // TAMBAH: Function untuk load films dengan AsyncTask seperti demo dosen
+    private fun loadFilmsWithAsyncTask() {
+        filmLoadTask = FilmLoadTask()
+        // progressBar.visibility = View.VISIBLE
+        // progressBar.max = 100
+        filmLoadTask!!.execute()
+    }
+
     private fun loadFilms() {
         val request = JsonArrayRequest(
             Request.Method.GET, API_URL, null,
@@ -111,12 +173,11 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
                     filmList.clear()
                     filmList.addAll(filmsFromJson)
 
-                    // Simpan ke database
                     filmsFromJson.forEach { film ->
                         dbHelper.insertFilm(film)
                     }
 
-                    filmAdapter.notifyDataSetChanged() // Sesuai cara dosen
+                    filmAdapter.notifyDataSetChanged()
                     Toast.makeText(this, "Films loaded: ${filmList.size}", Toast.LENGTH_SHORT).show()
 
                 } catch (e: JSONException) {
@@ -125,7 +186,7 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             },
             { error ->
-                Log.e("Volley error", error.toString()) // Log error sesuai dosen
+                Log.e("Volley error", error.toString())
                 Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show()
             }
         )
@@ -133,7 +194,6 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         requestQueue.add(request)
     }
 
-    // Parsing JSON sesuai struktur demo dosen
     private fun parseJSON(jsonArray: JSONArray): ArrayList<Film> {
         val filmList = ArrayList<Film>()
         try {
@@ -151,5 +211,68 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
             e.printStackTrace()
         }
         return filmList
+    }
+
+    // TAMBAH: Utility function seperti demo dosen
+    private fun disableView(view: View, isDisable: Boolean) {
+        if (isDisable) {
+            view.alpha = 0.5f
+            view.isEnabled = false
+        } else {
+            view.alpha = 1.0f
+            view.isEnabled = true
+        }
+    }
+
+    // TAMBAH: AsyncTask inner class seperti demo dosen
+    inner class FilmLoadTask : android.os.AsyncTask<Void, Int, Boolean>() {
+        override fun doInBackground(vararg params: Void?): Boolean {
+            return try {
+                // Simulate loading process with progress
+                for (i in 0..100 step 10) {
+                    Thread.sleep(200) // Simulate work
+                    publishProgress(i)
+                }
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        override fun onPreExecute() {
+            // progressBar.visibility = View.VISIBLE
+            Toast.makeText(this@HomePageActivity, "Loading films...", Toast.LENGTH_SHORT).show()
+            super.onPreExecute()
+        }
+
+        override fun onPostExecute(result: Boolean) {
+            // progressBar.visibility = View.GONE
+            if (result) {
+                loadFilms() // Load actual data after simulation
+            } else {
+                Toast.makeText(this@HomePageActivity, "Failed to load films", Toast.LENGTH_SHORT).show()
+            }
+            super.onPostExecute(result)
+        }
+
+        override fun onProgressUpdate(vararg values: Int?) {
+            if (values.isNotEmpty() && values[0] != null) {
+                // progressBar.progress = values[0]!!
+                // Optional: Update progress text
+            }
+            super.onProgressUpdate(*values)
+        }
+
+        override fun onCancelled() {
+            // progressBar.visibility = View.GONE
+            Toast.makeText(this@HomePageActivity, "Loading cancelled", Toast.LENGTH_SHORT).show()
+            super.onCancelled()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // TAMBAH: Cancel AsyncTask seperti demo dosen
+        filmLoadTask?.cancel(true)
     }
 }

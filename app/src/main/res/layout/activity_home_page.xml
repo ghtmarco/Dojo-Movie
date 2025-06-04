@@ -167,6 +167,18 @@
 
             </LinearLayout>
 
+            <ProgressBar
+                android:id="@+id/progressBarFilms"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                android:progressTint="@color/primary"
+                android:max="100"
+                android:progress="0" />
+
             <!-- Films RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerFilms"

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.telephony.SmsManager
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -17,45 +18,55 @@ import kotlin.random.Random
 class RegisterPage : AppCompatActivity() {
 
     private lateinit var dbHelper: DatabaseHelper
+    private lateinit var smsManager: SmsManager // TAMBAH: Ikuti cara dosen
     private val SMS_PERMISSION = 101
     private val TARGET_PHONE = "6505551212"
+
+    // Views - akan diganti ke view binding nanti jika perlu
+    private lateinit var phoneInput: EditText
+    private lateinit var passwordInput: EditText
+    private lateinit var confirmInput: EditText
+    private lateinit var registerBtn: Button
+    private lateinit var loginLink: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
         dbHelper = DatabaseHelper(this)
+        smsManager = SmsManager.getDefault() // TAMBAH: Init SMS Manager seperti dosen
+
+        initViews()
+        setupListeners()
         checkSmsPermission()
+    }
 
-        val phoneInput = findViewById<EditText>(R.id.editTextRegisterPhoneNumber)
-        val passwordInput = findViewById<EditText>(R.id.editTextRegisterPassword)
-        val confirmInput = findViewById<EditText>(R.id.editTextConfirmPassword)
-        val registerBtn = findViewById<Button>(R.id.buttonRegister)
-        val loginLink = findViewById<TextView>(R.id.textViewLoginLink)
+    private fun initViews() {
+        phoneInput = findViewById(R.id.editTextRegisterPhoneNumber)
+        passwordInput = findViewById(R.id.editTextRegisterPassword)
+        confirmInput = findViewById(R.id.editTextConfirmPassword)
+        registerBtn = findViewById(R.id.buttonRegister)
+        loginLink = findViewById(R.id.textViewLoginLink)
+    }
 
+    private fun setupListeners() {
         registerBtn.setOnClickListener {
             val phone = phoneInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
             val confirm = confirmInput.text.toString().trim()
 
+            // PERBAIKAN: Validation seperti demo dosen
             if (phone.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-                Toast.makeText(this, "Semua kolom harus diisi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show() // Sama dengan dosen
             } else if (dbHelper.isPhoneRegistered(phone)) {
-                Toast.makeText(this, "Nomor telepon sudah terdaftar", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Phone number already registered", Toast.LENGTH_SHORT).show()
             } else if (password.length < 8) {
-                Toast.makeText(this, "Password minimal 8 karakter", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Password minimum 8 characters", Toast.LENGTH_SHORT).show()
             } else if (password != confirm) {
-                Toast.makeText(this, "Password tidak cocok", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Password not match", Toast.LENGTH_SHORT).show()
             } else {
                 val otpCode = Random.nextInt(100000, 1000000)
-                sendSmsOtp(otpCode)
-
-                val intent = Intent(this, OtpPage::class.java)
-                intent.putExtra("phone", phone)
-                intent.putExtra("password", password)
-                intent.putExtra("otp", otpCode)
-                startActivity(intent)
-                finish()
+                checkPermissionAndSendSMS(otpCode, phone, password) // IKUTI naming dosen
             }
         }
 
@@ -74,31 +85,48 @@ class RegisterPage : AppCompatActivity() {
         }
     }
 
-    private fun sendSmsOtp(otpCode: Int) {
-        Thread {
-            try {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                    == PackageManager.PERMISSION_GRANTED) {
+    // PERBAIKAN: Ikuti function pattern dosen dengan nama yang sama
+    private fun checkPermissionAndSendSMS(otpCode: Int, phone: String, password: String) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+            != PackageManager.PERMISSION_GRANTED) {
 
-                    val smsManager = SmsManager.getDefault()
-                    val message = "DoJo Movie OTP: $otpCode"
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.SEND_SMS), SMS_PERMISSION)
+        } else {
+            // PERBAIKAN: Send SMS langsung seperti demo dosen
+            sendSmsOtp(otpCode, phone, password)
+        }
+    }
 
-                    smsManager.sendTextMessage(TARGET_PHONE, null, message, null, null)
+    // PERBAIKAN: Simplify SMS sending seperti demo dosen
+    private fun sendSmsOtp(otpCode: Int, phone: String, password: String) {
+        try {
+            val message = "DoJo Movie OTP: $otpCode"
 
-                    runOnUiThread {
-                        Toast.makeText(this, "OTP dikirim ke $TARGET_PHONE", Toast.LENGTH_LONG).show()
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this, "OTP Code: $otpCode", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: Exception) {
-                runOnUiThread {
-                    Toast.makeText(this, "OTP Code: $otpCode", Toast.LENGTH_LONG).show()
-                }
-            }
-        }.start()
+            // IKUTI cara dosen: langsung send SMS tanpa thread
+            smsManager.sendTextMessage(TARGET_PHONE, null, message, null, null)
+
+            Toast.makeText(this, "OTP sent to $TARGET_PHONE", Toast.LENGTH_LONG).show()
+
+            // Proceed to OTP page
+            val intent = Intent(this, OtpPage::class.java)
+            intent.putExtra("phone", phone)
+            intent.putExtra("password", password)
+            intent.putExtra("otp", otpCode)
+            startActivity(intent)
+            finish()
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "OTP Code: $otpCode", Toast.LENGTH_LONG).show()
+
+            // Proceed anyway for demo purposes
+            val intent = Intent(this, OtpPage::class.java)
+            intent.putExtra("phone", phone)
+            intent.putExtra("password", password)
+            intent.putExtra("otp", otpCode)
+            startActivity(intent)
+            finish()
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -111,6 +139,17 @@ class RegisterPage : AppCompatActivity() {
                     Toast.makeText(this, "SMS permission denied", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    // TAMBAH: Utility function seperti demo dosen untuk UI management
+    private fun disableView(view: View, isDisable: Boolean) {
+        if (isDisable) {
+            view.alpha = 0.5f
+            view.isEnabled = false
+        } else {
+            view.alpha = 1.0f
+            view.isEnabled = true
         }
     }
 }
