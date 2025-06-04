@@ -42,11 +42,17 @@ class FilmAdapter(
         holder.filmPrice.text = formatter.format(film.price)
 
         try {
-            Glide.with(holder.itemView.context)
-                .load(film.image)
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .error(R.drawable.ic_launcher_foreground)
-                .into(holder.filmCover)
+            // PERBAIKAN: Handle image dari API yang nilainya "pathToImage"
+            if (film.image.isNotEmpty() && film.image != "pathToImage") {
+                Glide.with(holder.itemView.context)
+                    .load(film.image)
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
+                    .into(holder.filmCover)
+            } else {
+                // Jika image kosong atau "pathToImage", gunakan placeholder
+                holder.filmCover.setImageResource(R.drawable.ic_launcher_foreground)
+            }
         } catch (e: Exception) {
             holder.filmCover.setImageResource(R.drawable.ic_launcher_foreground)
         }

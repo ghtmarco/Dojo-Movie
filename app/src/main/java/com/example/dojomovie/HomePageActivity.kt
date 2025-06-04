@@ -3,6 +3,7 @@ package com.example.dojomovie
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import org.json.JSONArray
+import org.json.JSONException
 
 class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -25,7 +28,7 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var filmAdapter: FilmAdapter
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var prefs: SharedPreferences
-    private lateinit var volleyQueue: RequestQueue
+    private lateinit var requestQueue: RequestQueue
     private val filmList = mutableListOf<Film>()
     private var map: GoogleMap? = null
 
@@ -38,23 +41,25 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
         dbHelper = DatabaseHelper(this)
         prefs = getSharedPreferences("DoJoMoviePrefs", MODE_PRIVATE)
-        volleyQueue = Volley.newRequestQueue(this)
 
         setupViews()
         setupBottomNavigation()
         setupMap()
+
+        // Inisialisasi requestQueue dan load films - ikuti cara dosen
+        requestQueue = Volley.newRequestQueue(this)
         loadFilms()
     }
 
     private fun setupViews() {
         filmRecycler = findViewById(R.id.recyclerFilms)
+        filmRecycler.layoutManager = LinearLayoutManager(this)
+
         filmAdapter = FilmAdapter(filmList) { film ->
             val intent = Intent(this, DetailFilmActivity::class.java)
             intent.putExtra("film_id", film.id)
             startActivity(intent)
         }
-
-        filmRecycler.layoutManager = LinearLayoutManager(this)
         filmRecycler.adapter = filmAdapter
     }
 
@@ -64,7 +69,6 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         val navProfile = findViewById<LinearLayout>(R.id.navProfile)
 
         navHome.setOnClickListener {
-            // Already on home, do nothing or refresh
             Toast.makeText(this, "You are on Home", Toast.LENGTH_SHORT).show()
         }
 
@@ -97,61 +101,55 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         Toast.makeText(this, "DoJo Movie location loaded", Toast.LENGTH_SHORT).show()
     }
 
+    // Ikuti struktur demo dosen - mirip dengan MainActivity.kt dosen
     private fun loadFilms() {
         val request = JsonArrayRequest(
             Request.Method.GET, API_URL, null,
             { response ->
-                filmList.clear()
+                try {
+                    val filmsFromJson = parseJSON(response)
+                    filmList.clear()
+                    filmList.addAll(filmsFromJson)
 
-                for (i in 0 until response.length()) {
-                    try {
-                        val filmJson = response.getJSONObject(i)
-                        val id = filmJson.optString("id", "FILM_$i")
-                        val title = filmJson.optString("title", "Unknown Film")
-                        val image = filmJson.optString("image", "")
-                        val price = filmJson.optInt("price", 50000)
-
-                        val film = Film(id, title, image, price)
-                        filmList.add(film)
+                    // Simpan ke database
+                    filmsFromJson.forEach { film ->
                         dbHelper.insertFilm(film)
-
-                    } catch (e: Exception) {
-                        continue
                     }
-                }
 
-                if (filmList.isEmpty()) {
-                    loadSampleFilms()
-                }
+                    filmAdapter.notifyDataSetChanged() // Sesuai cara dosen
+                    Toast.makeText(this, "Films loaded: ${filmList.size}", Toast.LENGTH_SHORT).show()
 
-                filmAdapter.updateFilms(filmList)
-                Toast.makeText(this, "Films loaded: ${filmList.size}", Toast.LENGTH_SHORT).show()
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "JSON parsing error", Toast.LENGTH_SHORT).show()
+                }
             },
             { error ->
-                loadSampleFilms()
-                Toast.makeText(this, "No internet, loading sample data", Toast.LENGTH_SHORT).show()
+                Log.e("Volley error", error.toString()) // Log error sesuai dosen
+                Toast.makeText(this, "Network error", Toast.LENGTH_SHORT).show()
             }
         )
 
-        volleyQueue.add(request)
+        requestQueue.add(request)
     }
 
-    private fun loadSampleFilms() {
-        filmList.clear()
+    // Parsing JSON sesuai struktur demo dosen
+    private fun parseJSON(jsonArray: JSONArray): ArrayList<Film> {
+        val filmList = ArrayList<Film>()
+        try {
+            for (i in 0 until jsonArray.length()) {
+                val filmObject = jsonArray.getJSONObject(i)
 
-        val sampleFilms = listOf(
-            Film("MV001", "Avengers Endgame", "https://via.placeholder.com/300x450", 75000),
-            Film("MV002", "Spider-Man", "https://via.placeholder.com/300x450", 70000),
-            Film("MV003", "Iron Man", "https://via.placeholder.com/300x450", 65000),
-            Film("MV004", "Captain America", "https://via.placeholder.com/300x450", 70000),
-            Film("MV005", "Thor", "https://via.placeholder.com/300x450", 68000)
-        )
+                val id = filmObject.getString("id")
+                val title = filmObject.getString("title")
+                val image = filmObject.getString("image")
+                val price = filmObject.getInt("price")
 
-        filmList.addAll(sampleFilms)
-        sampleFilms.forEach { film ->
-            dbHelper.insertFilm(film)
+                filmList.add(Film(id, title, image, price))
+            }
+        } catch (e: JSONException) {
+            e.printStackTrace()
         }
-
-        filmAdapter.updateFilms(filmList)
+        return filmList
     }
 }

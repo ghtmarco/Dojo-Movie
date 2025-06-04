@@ -60,7 +60,12 @@ class ProfileActivity : AppCompatActivity() {
         if (userId != -1) {
             val userPhone = dbHelper.getUserPhone(userId)
             if (userPhone != null) {
+                // Update kedua TextView untuk phone number
                 phoneText.text = userPhone
+
+                // Update juga textPhoneNumberDetail jika ada
+                val phoneDetailText = findViewById<TextView>(R.id.textPhoneNumberDetail)
+                phoneDetailText?.text = userPhone
             } else {
                 phoneText.text = "Phone not found"
             }
