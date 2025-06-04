@@ -2,262 +2,313 @@ package com.example.dojomovie
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
-
-    companion object {
-        private const val DB_NAME = "DoJoMovie.db"
-        private const val DB_VERSION = 2
-
-        private const val TABLE_USERS = "users"
-        private const val TABLE_FILMS = "films"
-        private const val TABLE_TRANSACTIONS = "transactions"
-
-        private const val USER_ID = "user_id"
-        private const val USER_PHONE = "phone_number"
-        private const val USER_PASSWORD = "password"
-
-        private const val FILM_ID = "film_id"
-        private const val FILM_TITLE = "film_title"
-        private const val FILM_IMAGE = "film_image"
-        private const val FILM_PRICE = "film_price"
-
-        private const val TRANS_ID = "id"
-        private const val TRANS_USER_ID = "user_id"
-        private const val TRANS_FILM_ID = "film_id"
-        private const val TRANS_QUANTITY = "quantity"
-    }
+class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "DoJoMovie", null, 1) {
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createUsersTable = "CREATE TABLE $TABLE_USERS (" +
-                "$USER_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "$USER_PHONE VARCHAR UNIQUE," +
-                "$USER_PASSWORD VARCHAR" +
+        // IKUTI DEMO DOSEN: Create table query pattern
+        val queryCreateUsersTable = "CREATE TABLE IF NOT EXISTS users(" +
+                "user_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                "phone_number VARCHAR(255) NOT NULL," +
+                "password VARCHAR(255) NOT NULL" +
                 ")"
 
-        val createFilmsTable = "CREATE TABLE $TABLE_FILMS (" +
-                "$FILM_ID VARCHAR PRIMARY KEY," +
-                "$FILM_TITLE VARCHAR," +
-                "$FILM_IMAGE VARCHAR," +
-                "$FILM_PRICE INTEGER" +
+        val queryCreateFilmsTable = "CREATE TABLE IF NOT EXISTS films(" +
+                "film_id VARCHAR(255) NOT NULL PRIMARY KEY," +
+                "film_title VARCHAR(255) NOT NULL," +
+                "film_image VARCHAR(255) NOT NULL," +
+                "film_price INTEGER NOT NULL" +
                 ")"
 
-        val createTransTable = "CREATE TABLE $TABLE_TRANSACTIONS (" +
-                "$TRANS_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "$TRANS_USER_ID INTEGER," +
-                "$TRANS_FILM_ID VARCHAR," +
-                "$TRANS_QUANTITY INTEGER," +
-                "FOREIGN KEY($TRANS_USER_ID) REFERENCES $TABLE_USERS($USER_ID)," +
-                "FOREIGN KEY($TRANS_FILM_ID) REFERENCES $TABLE_FILMS($FILM_ID)" +
+        val queryCreateTransactionsTable = "CREATE TABLE IF NOT EXISTS transactions(" +
+                "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                "user_id INTEGER NOT NULL," +
+                "film_id VARCHAR(255) NOT NULL," +
+                "quantity INTEGER NOT NULL" +
                 ")"
 
-        db?.execSQL(createUsersTable)
-        db?.execSQL(createFilmsTable)
-        db?.execSQL(createTransTable)
+        db?.execSQL(queryCreateUsersTable)
+        db?.execSQL(queryCreateFilmsTable)
+        db?.execSQL(queryCreateTransactionsTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_TRANSACTIONS")
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_FILMS")
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
+        // IKUTI DEMO DOSEN: Drop dan onCreate
+        db?.execSQL("DROP TABLE IF EXISTS transactions")
+        db?.execSQL("DROP TABLE IF EXISTS films")
+        db?.execSQL("DROP TABLE IF EXISTS users")
         onCreate(db)
     }
 
-    fun insertUser(phone: String, password: String): Long {
-        val db = this.writableDatabase
-        val values = ContentValues().apply {
-            put(USER_PHONE, phone)
-            put(USER_PASSWORD, password)
+    // USER OPERATIONS - IKUTI PATTERN DEMO DOSEN
+    fun createUser(phone: String, password: String) {
+        var db = writableDatabase
+        var values = ContentValues().apply {
+            put("phone_number", phone)
+            put("password", password)
+        }
+        db.insert("users", null, values)
+        db.close()
+    }
+
+    fun getUser(): ArrayList<User> {
+        val result = ArrayList<User>()
+        val db = writableDatabase
+        val query = "SELECT * FROM users"
+        val cursor = db.rawQuery(query, null)
+        cursor.moveToFirst()
+
+        if(cursor.count > 0) {
+            do {
+                var id = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
+                var phone = cursor.getString(cursor.getColumnIndexOrThrow("phone_number"))
+                var password = cursor.getString(cursor.getColumnIndexOrThrow("password"))
+                result.add(User(id.toString(), phone, password))
+            } while (cursor.moveToNext())
         }
 
-        val result = db.insert(TABLE_USERS, null, values)
+        cursor.close()
         db.close()
         return result
     }
 
-    fun checkUserLogin(phone: String, password: String): Int? {
-        val db = this.readableDatabase
-        val query = "$USER_PHONE = ? AND $USER_PASSWORD = ?"
-        val args = arrayOf(phone, password)
-        var userId: Int? = null
-
-        val cursor: Cursor? = db.query(
-            TABLE_USERS,
-            arrayOf(USER_ID),
-            query,
-            args,
-            null,
-            null,
-            null
-        )
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val userIdIndex = it.getColumnIndex(USER_ID)
-                if (userIdIndex != -1) {
-                    userId = it.getInt(userIdIndex)
-                }
-            }
+    fun updateUser(user: User) {
+        var db = writableDatabase
+        var values = ContentValues().apply {
+            put("phone_number", user.phone)
+            put("password", user.password)
         }
+        db.update("users", values, "user_id = ?", arrayOf(user.id))
+        db.close()
+    }
+
+    fun deleteUser(id: String) {
+        var db = writableDatabase
+        db.delete("users", "user_id = ?", arrayOf(id))
+        db.close()
+    }
+
+    // FILM OPERATIONS - IKUTI PATTERN DEMO DOSEN
+    fun createFilm(film: Film) {
+        var db = writableDatabase
+        var values = ContentValues().apply {
+            put("film_id", film.id)
+            put("film_title", film.title)
+            put("film_image", film.image)
+            put("film_price", film.price)
+        }
+        db.insert("films", null, values)
+        db.close()
+    }
+
+    fun getFilm(): ArrayList<Film> {
+        val result = ArrayList<Film>()
+        val db = writableDatabase
+        val query = "SELECT * FROM films"
+        val cursor = db.rawQuery(query, null)
+        cursor.moveToFirst()
+
+        if(cursor.count > 0) {
+            do {
+                var id = cursor.getString(cursor.getColumnIndexOrThrow("film_id"))
+                var title = cursor.getString(cursor.getColumnIndexOrThrow("film_title"))
+                var image = cursor.getString(cursor.getColumnIndexOrThrow("film_image"))
+                var price = cursor.getInt(cursor.getColumnIndexOrThrow("film_price"))
+                result.add(Film(id, title, image, price))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return result
+    }
+
+    fun updateFilm(film: Film) {
+        var db = writableDatabase
+        var values = ContentValues().apply {
+            put("film_title", film.title)
+            put("film_image", film.image)
+            put("film_price", film.price)
+        }
+        db.update("films", values, "film_id = ?", arrayOf(film.id))
+        db.close()
+    }
+
+    fun deleteFilm(id: String) {
+        var db = writableDatabase
+        db.delete("films", "film_id = ?", arrayOf(id))
+        db.close()
+    }
+
+    // TRANSACTION OPERATIONS - IKUTI PATTERN DEMO DOSEN
+    fun createTransaction(userId: Int, filmId: String, quantity: Int) {
+        var db = writableDatabase
+        var values = ContentValues().apply {
+            put("user_id", userId)
+            put("film_id", filmId)
+            put("quantity", quantity)
+        }
+        db.insert("transactions", null, values)
+        db.close()
+    }
+
+    fun getTransaction(): ArrayList<Transaction> {
+        val result = ArrayList<Transaction>()
+        val db = writableDatabase
+        val query = "SELECT * FROM transactions"
+        val cursor = db.rawQuery(query, null)
+        cursor.moveToFirst()
+
+        if(cursor.count > 0) {
+            do {
+                var id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                var userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
+                var filmId = cursor.getString(cursor.getColumnIndexOrThrow("film_id"))
+                var quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"))
+                result.add(Transaction(id, userId, filmId, quantity))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return result
+    }
+
+    fun updateTransaction(transaction: Transaction) {
+        var db = writableDatabase
+        var values = ContentValues().apply {
+            put("user_id", transaction.userId)
+            put("film_id", transaction.filmId)
+            put("quantity", transaction.quantity)
+        }
+        db.update("transactions", values, "id = ?", arrayOf(transaction.id.toString()))
+        db.close()
+    }
+
+    fun deleteTransaction(id: String) {
+        var db = writableDatabase
+        db.delete("transactions", "id = ?", arrayOf(id))
+        db.close()
+    }
+
+    // KEEP existing methods untuk compatibility dengan project DoJo Movie
+    fun insertUser(phone: String, password: String): Long {
+        createUser(phone, password)
+        return 1
+    }
+
+    fun checkUserLogin(phone: String, password: String): Int? {
+        val db = readableDatabase
+        val query = "SELECT user_id FROM users WHERE phone_number = ? AND password = ?"
+        val cursor = db.rawQuery(query, arrayOf(phone, password))
+
+        var userId: Int? = null
+        cursor.moveToFirst()
+        if (cursor.count > 0) {
+            userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
+        }
+
+        cursor.close()
         db.close()
         return userId
     }
 
     fun isPhoneRegistered(phone: String): Boolean {
-        val db = this.readableDatabase
-        val query = "$USER_PHONE = ?"
-        val args = arrayOf(phone)
-        var isRegistered = false
+        val db = readableDatabase
+        val query = "SELECT user_id FROM users WHERE phone_number = ?"
+        val cursor = db.rawQuery(query, arrayOf(phone))
 
-        val cursor: Cursor? = db.query(
-            TABLE_USERS,
-            arrayOf(USER_ID),
-            query,
-            args,
-            null, null, null
-        )
-
-        cursor?.use {
-            if (it.count > 0) {
-                isRegistered = true
-            }
-        }
+        val isRegistered = cursor.count > 0
+        cursor.close()
         db.close()
         return isRegistered
     }
 
     fun getUserPhone(userId: Int): String? {
-        val db = this.readableDatabase
-        val query = "$USER_ID = ?"
-        val args = arrayOf(userId.toString())
+        val db = readableDatabase
+        val query = "SELECT phone_number FROM users WHERE user_id = ?"
+        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
+
         var userPhone: String? = null
-
-        val cursor: Cursor? = db.query(
-            TABLE_USERS,
-            arrayOf(USER_PHONE),
-            query,
-            args,
-            null, null, null
-        )
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val phoneIndex = it.getColumnIndex(USER_PHONE)
-                if (phoneIndex != -1) {
-                    userPhone = it.getString(phoneIndex)
-                }
-            }
+        cursor.moveToFirst()
+        if (cursor.count > 0) {
+            userPhone = cursor.getString(cursor.getColumnIndexOrThrow("phone_number"))
         }
+
+        cursor.close()
         db.close()
         return userPhone
     }
 
     fun insertFilm(film: Film): Long {
-        val db = this.writableDatabase
-        val values = ContentValues().apply {
-            put(FILM_ID, film.id)
-            put(FILM_TITLE, film.title)
-            put(FILM_IMAGE, film.image)
-            put(FILM_PRICE, film.price)
-        }
-
-        val result = db.insertWithOnConflict(TABLE_FILMS, null, values, SQLiteDatabase.CONFLICT_REPLACE)
-        db.close()
-        return result
+        createFilm(film)
+        return 1
     }
 
     fun getAllFilms(): List<Film> {
-        val filmList = mutableListOf<Film>()
-        val db = this.readableDatabase
-        val cursor: Cursor? = db.query(TABLE_FILMS, null, null, null, null, null, null)
-
-        cursor?.use {
-            while (it.moveToNext()) {
-                val id = it.getString(it.getColumnIndexOrThrow(FILM_ID))
-                val title = it.getString(it.getColumnIndexOrThrow(FILM_TITLE))
-                val image = it.getString(it.getColumnIndexOrThrow(FILM_IMAGE))
-                val price = it.getInt(it.getColumnIndexOrThrow(FILM_PRICE))
-
-                filmList.add(Film(id, title, image, price))
-            }
-        }
-        db.close()
-        return filmList
+        return getFilm()
     }
 
     fun getFilmById(filmId: String): Film? {
-        val db = this.readableDatabase
-        val query = "$FILM_ID = ?"
-        val args = arrayOf(filmId)
+        val db = readableDatabase
+        val query = "SELECT * FROM films WHERE film_id = ?"
+        val cursor = db.rawQuery(query, arrayOf(filmId))
+
         var film: Film? = null
-
-        val cursor: Cursor? = db.query(
-            TABLE_FILMS,
-            null,
-            query,
-            args,
-            null, null, null
-        )
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val id = it.getString(it.getColumnIndexOrThrow(FILM_ID))
-                val title = it.getString(it.getColumnIndexOrThrow(FILM_TITLE))
-                val image = it.getString(it.getColumnIndexOrThrow(FILM_IMAGE))
-                val price = it.getInt(it.getColumnIndexOrThrow(FILM_PRICE))
-
-                film = Film(id, title, image, price)
-            }
+        cursor.moveToFirst()
+        if (cursor.count > 0) {
+            val id = cursor.getString(cursor.getColumnIndexOrThrow("film_id"))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow("film_title"))
+            val image = cursor.getString(cursor.getColumnIndexOrThrow("film_image"))
+            val price = cursor.getInt(cursor.getColumnIndexOrThrow("film_price"))
+            film = Film(id, title, image, price)
         }
+
+        cursor.close()
         db.close()
         return film
     }
 
     fun insertTransaction(userId: Int, filmId: String, quantity: Int): Long {
-        val db = this.writableDatabase
-        val values = ContentValues().apply {
-            put(TRANS_USER_ID, userId)
-            put(TRANS_FILM_ID, filmId)
-            put(TRANS_QUANTITY, quantity)
-        }
-
-        val result = db.insert(TABLE_TRANSACTIONS, null, values)
-        db.close()
-        return result
+        createTransaction(userId, filmId, quantity)
+        return 1
     }
 
     fun getUserTransactions(userId: Int): List<Transaction> {
-        val transList = mutableListOf<Transaction>()
-        val db = this.readableDatabase
+        val result = ArrayList<Transaction>()
+        val db = readableDatabase
 
         val query = """
-            SELECT t.$TRANS_ID, t.$TRANS_USER_ID, 
-                   t.$TRANS_FILM_ID, t.$TRANS_QUANTITY,
-                   f.$FILM_TITLE, f.$FILM_PRICE
-            FROM $TABLE_TRANSACTIONS t
-            JOIN $TABLE_FILMS f ON t.$TRANS_FILM_ID = f.$FILM_ID
-            WHERE t.$TRANS_USER_ID = ?
+            SELECT t.id, t.user_id, t.film_id, t.quantity,
+                   f.film_title, f.film_price
+            FROM transactions t
+            JOIN films f ON t.film_id = f.film_id
+            WHERE t.user_id = ?
         """
 
-        val cursor: Cursor? = db.rawQuery(query, arrayOf(userId.toString()))
+        val cursor = db.rawQuery(query, arrayOf(userId.toString()))
+        cursor.moveToFirst()
 
-        cursor?.use {
-            while (it.moveToNext()) {
-                val id = it.getInt(it.getColumnIndexOrThrow(TRANS_ID))
-                val userIdCol = it.getInt(it.getColumnIndexOrThrow(TRANS_USER_ID))
-                val filmId = it.getString(it.getColumnIndexOrThrow(TRANS_FILM_ID))
-                val quantity = it.getInt(it.getColumnIndexOrThrow(TRANS_QUANTITY))
-                val filmTitle = it.getString(it.getColumnIndexOrThrow(FILM_TITLE))
-                val filmPrice = it.getInt(it.getColumnIndexOrThrow(FILM_PRICE))
+        if (cursor.count > 0) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val userIdCol = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
+                val filmId = cursor.getString(cursor.getColumnIndexOrThrow("film_id"))
+                val quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"))
+                val filmTitle = cursor.getString(cursor.getColumnIndexOrThrow("film_title"))
+                val filmPrice = cursor.getInt(cursor.getColumnIndexOrThrow("film_price"))
 
-                transList.add(Transaction(id, userIdCol, filmId, quantity, filmTitle, filmPrice))
-            }
+                result.add(Transaction(id, userIdCol, filmId, quantity, filmTitle, filmPrice))
+            } while (cursor.moveToNext())
         }
+
+        cursor.close()
         db.close()
-        return transList
+        return result
     }
 }
+
+// SIMPLE data class sesuai demo dosen
+data class User(val id: String, val phone: String, val password: String)
