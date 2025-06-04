@@ -7,6 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import java.text.NumberFormat
 import java.util.*
 
@@ -38,27 +40,43 @@ class FilmAdapter(
 
         holder.filmTitle.text = film.title
 
+        // Format price in Indonesian Rupiah
         val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         holder.filmPrice.text = formatter.format(film.price)
 
-        try {
-            // PERBAIKAN: Handle image dari API yang nilainya "pathToImage"
-            if (film.image.isNotEmpty() && film.image != "pathToImage") {
-                Glide.with(holder.itemView.context)
-                    .load(film.image)
-                    .placeholder(R.drawable.ic_launcher_foreground)
-                    .error(R.drawable.ic_launcher_foreground)
-                    .into(holder.filmCover)
-            } else {
-                // Jika image kosong atau "pathToImage", gunakan placeholder
-                holder.filmCover.setImageResource(R.drawable.ic_launcher_foreground)
-            }
-        } catch (e: Exception) {
-            holder.filmCover.setImageResource(R.drawable.ic_launcher_foreground)
-        }
+        // PERBAIKAN: Handle movie poster images from URL
+        loadMoviePoster(holder.filmCover, film.image)
 
         holder.itemView.setOnClickListener {
             onClick(film)
+        }
+    }
+
+    private fun loadMoviePoster(imageView: ImageView, imageUrl: String) {
+        try {
+            // Check if we have a valid URL (not empty and not placeholder)
+            if (imageUrl.isNotEmpty() &&
+                imageUrl != "pathToImage" &&
+                (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
+
+                // Load image from URL with Glide - optimized for movie posters
+                Glide.with(imageView.context)
+                    .load(imageUrl)
+                    .apply(
+                        RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .centerCrop()
+                            .placeholder(R.drawable.ic_movie_placeholder)
+                            .error(R.drawable.ic_movie_placeholder)
+                    )
+                    .into(imageView)
+            } else {
+                // Use placeholder for invalid URLs
+                imageView.setImageResource(R.drawable.ic_movie_placeholder)
+            }
+        } catch (e: Exception) {
+            // Fallback to placeholder on any error
+            imageView.setImageResource(R.drawable.ic_movie_placeholder)
         }
     }
 

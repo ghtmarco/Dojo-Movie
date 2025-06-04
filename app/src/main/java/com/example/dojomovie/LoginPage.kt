@@ -30,34 +30,42 @@ class LoginPage : AppCompatActivity() {
             val phone = phoneInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
+            // IKUTI SOAL: Validate phone number must be filled
             if (phone.isEmpty()) {
-                Toast.makeText(this, "Nomor Telepon harus diisi", Toast.LENGTH_SHORT).show()
-            } else if (password.isEmpty()) {
-                Toast.makeText(this, "Kata Sandi harus diisi", Toast.LENGTH_SHORT).show()
-            } else {
-                val userId = dbHelper.checkUserLogin(phone, password)
+                Toast.makeText(this, "Phone number must be filled", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-                if (userId != null) {
-                    Toast.makeText(this, "Login Berhasil!", Toast.LENGTH_SHORT).show()
+            // IKUTI SOAL: Validate password must be filled
+            if (password.isEmpty()) {
+                Toast.makeText(this, "Password must be filled", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-                    with(prefs.edit()) {
-                        putInt("user_id", userId)
-                        putString("phone_number", phone)
-                        putBoolean("is_logged_in", true)
-                        apply()
-                    }
+            // IKUTI SOAL: Validate phone number and password are registered in database
+            val userId = dbHelper.checkUserLogin(phone, password)
 
-                    // PERBAIKAN: Redirect ke OTP page sesuai soal (bukan Home page)
-                    val intent = Intent(this, OtpPage::class.java)
-                    intent.putExtra("phone", phone)
-                    intent.putExtra("password", password)
-                    intent.putExtra("otp", 123456) // Dummy OTP untuk login
-                    intent.putExtra("is_login", true) // Flag untuk membedakan register vs login
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toast.makeText(this, "Nomor Telepon atau Kata Sandi salah", Toast.LENGTH_SHORT).show()
+            if (userId != null) {
+                // Save login session
+                with(prefs.edit()) {
+                    putInt("user_id", userId)
+                    putString("phone_number", phone)
+                    putBoolean("is_logged_in", true)
+                    apply()
                 }
+
+                // IKUTI SOAL: "Redirect the logged-in user to the OTP page"
+                val intent = Intent(this, OtpPage::class.java)
+                intent.putExtra("phone", phone)
+                intent.putExtra("password", password)
+                intent.putExtra("otp", 123456) // Dummy OTP untuk login verification
+                intent.putExtra("is_login", true) // Flag untuk membedakan login vs register
+                intent.putExtra("user_id", userId) // Pass user ID
+                startActivity(intent)
+                finish()
+            } else {
+                // IKUTI SOAL: If validation fails, show error message using Toast
+                Toast.makeText(this, "Phone number and password are not registered", Toast.LENGTH_SHORT).show()
             }
         }
 

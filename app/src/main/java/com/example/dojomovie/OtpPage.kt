@@ -13,7 +13,8 @@ class OtpPage : AppCompatActivity() {
     private var userPhone: String? = null
     private var userPassword: String? = null
     private var correctOtp: Int = 0
-    private var isLogin: Boolean = false // TAMBAH: Flag untuk login vs register
+    private var isLogin: Boolean = false
+    private var userId: Int = -1
     private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,44 +23,54 @@ class OtpPage : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
+        // Get data from intent
         userPhone = intent.getStringExtra("phone")
         userPassword = intent.getStringExtra("password")
         correctOtp = intent.getIntExtra("otp", 0)
-        isLogin = intent.getBooleanExtra("is_login", false) // TAMBAH: Check if from login
+        isLogin = intent.getBooleanExtra("is_login", false)
+        userId = intent.getIntExtra("user_id", -1)
 
         val otpInput = findViewById<EditText>(R.id.editTextOtpCode)
         val verifyBtn = findViewById<Button>(R.id.buttonVerifyOtp)
         val instruction = findViewById<TextView>(R.id.textViewOtpInstruction)
 
-        instruction.text = "Masukkan kode OTP yang dikirim ke (650) 555-1212"
+        // Update instruction text
+        instruction.text = "Enter the 6-digit code sent to\n$userPhone"
 
         verifyBtn.setOnClickListener {
             val inputOtp = otpInput.text.toString().trim()
 
+            // IKUTI SOAL: Validate that OTP EditText must be filled
             if (inputOtp.isEmpty()) {
-                Toast.makeText(this, "Kode OTP harus diisi", Toast.LENGTH_SHORT).show()
-            } else {
-                val enteredOtp = inputOtp.toIntOrNull()
+                Toast.makeText(this, "OTP Code must be filled", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-                if (enteredOtp == null) {
-                    Toast.makeText(this, "OTP harus berupa angka", Toast.LENGTH_SHORT).show()
-                } else if (enteredOtp == correctOtp) {
-                    if (isLogin) {
-                        // PERBAIKAN: Jika dari login, langsung ke Home page
-                        proceedToHome()
-                    } else {
-                        // Jika dari register, save user dulu baru ke login
-                        saveUserToDatabase()
-                    }
+            val enteredOtp = inputOtp.toIntOrNull()
+
+            if (enteredOtp == null) {
+                Toast.makeText(this, "OTP must be numbers", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // IKUTI SOAL: Validate that the code typed by user must be same as OTP Code in SMS
+            if (enteredOtp == correctOtp) {
+                if (isLogin) {
+                    // For LOGIN flow: OTP verified -> go to Home Page
+                    proceedToHome()
                 } else {
-                    Toast.makeText(this, "Kode OTP salah", Toast.LENGTH_SHORT).show()
+                    // For REGISTER flow: OTP verified -> save user to database -> go to Login Page
+                    saveUserAndGoToLogin()
                 }
+            } else {
+                // IKUTI SOAL: If OTP Code is not valid, show error message using Toast
+                Toast.makeText(this, "Invalid OTP Code", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun proceedToHome() {
-        Toast.makeText(this, "OTP verified! Welcome back!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "OTP verification successful! Welcome!", Toast.LENGTH_SHORT).show()
 
         val intent = Intent(this, HomePageActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -67,22 +78,24 @@ class OtpPage : AppCompatActivity() {
         finish()
     }
 
-    private fun saveUserToDatabase() {
+    private fun saveUserAndGoToLogin() {
         if (userPhone != null && userPassword != null) {
-            val userId = dbHelper.insertUser(userPhone!!, userPassword!!)
+            // IKUTI SOAL: "create a user with the credential from Register Page and save it to the database"
+            val newUserId = dbHelper.insertUser(userPhone!!, userPassword!!)
 
-            if (userId > 0) {
-                Toast.makeText(this, "Registrasi berhasil! Silakan login.", Toast.LENGTH_SHORT).show()
+            if (newUserId > 0) {
+                Toast.makeText(this, "Registration successful! Please log in.", Toast.LENGTH_SHORT).show()
 
+                // IKUTI SOAL: "then redirect the user to the Login Page"
                 val intent = Intent(this, LoginPage::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
             } else {
-                Toast.makeText(this, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to save user data", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this, "Data tidak lengkap", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "User data is incomplete", Toast.LENGTH_SHORT).show()
         }
     }
 }

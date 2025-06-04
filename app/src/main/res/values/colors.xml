@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Apple Style Light Mode Colors -->
+    <!-- iOS Style Blue Theme - Light Mode -->
 
-    <!-- Primary Colors (iOS Blue instead of red) -->
+    <!-- Primary Colors (iOS Blue) -->
     <color name="primary">#007AFF</color>
     <color name="primary_dark">#0051D5</color>
     <color name="primary_light">#4DB6FF</color>
@@ -13,13 +13,13 @@
     <color name="secondary_light">#AEAEB2</color>
     <color name="secondary_dark">#6D6D70</color>
 
-    <!-- Background Colors (iOS System) -->
+    <!-- Background Colors (iOS System Light) -->
     <color name="background">#FFFFFF</color>
     <color name="surface">#FFFFFF</color>
     <color name="surface_variant">#F9F9F9</color>
     <color name="surface_secondary">#F2F2F7</color>
 
-    <!-- Text Colors (iOS System) -->
+    <!-- Text Colors (iOS System Light) -->
     <color name="text_primary">#000000</color>
     <color name="text_secondary">#3C3C43</color>
     <color name="text_tertiary">#6D6D70</color>
@@ -32,7 +32,7 @@
     <color name="accent_error">#FF3B30</color>
     <color name="accent_info">#007AFF</color>
 
-    <!-- Border Colors (iOS System) -->
+    <!-- Border Colors (iOS System Light) -->
     <color name="border">#D1D1D6</color>
     <color name="border_light">#E5E5EA</color>
     <color name="divider">#F2F2F7</color>
@@ -43,7 +43,7 @@
 
     <!-- Card and Elevation -->
     <color name="card_background">#FFFFFF</color>
-    <color name="shadow">#000000</color>
+    <color name="shadow">#1C1C1C</color>
 
     <!-- Dark Mode Colors -->
     <color name="dark_background">#000000</color>
@@ -61,4 +61,11 @@
     <color name="dark_divider">#2C2C2E</color>
 
     <color name="dark_card_background">#1C1C1E</color>
+
+    <!-- Dark Mode Primary Colors -->
+    <color name="dark_primary">#0A84FF</color>
+    <color name="dark_primary_light">#5AC8FA</color>
+    <color name="dark_accent_success">#30D158</color>
+    <color name="dark_accent_warning">#FF9F0A</color>
+    <color name="dark_accent_error">#FF453A</color>
 </resources>

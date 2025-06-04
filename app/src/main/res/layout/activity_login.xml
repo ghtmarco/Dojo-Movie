@@ -5,161 +5,156 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/colorSurface"
     tools:context=".LoginPage">
 
-    <!-- Background Gradient Overlay -->
-    <View
+    <!-- Content -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="@drawable/bg_header_gradient"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    <!-- Main Content Container -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="120dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/surface"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="32dp">
+            android:minHeight="0dp"
+            android:padding="24dp">
 
-            <!-- Logo -->
-            <ImageView
-                android:id="@+id/imageViewLogo"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:src="@drawable/logo"
-                android:scaleType="centerInside" />
-
-            <!-- Welcome Text -->
-            <TextView
+            <!-- Logo Section -->
+            <LinearLayout
+                android:id="@+id/logoSection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Welcome Back!"
-                android:textSize="24sp"
-                android:textColor="@color/text_primary"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginBottom="8dp" />
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginTop="60dp"
+                android:layout_marginBottom="40dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Please sign in to your account"
-                android:textSize="14sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginBottom="32dp" />
+                <!-- App Logo -->
+                <ImageView
+                    android:id="@+id/imageViewLogo"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/logo"
+                    android:scaleType="centerInside"
+                    android:layout_marginBottom="16dp" />
 
-            <!-- Phone Number Input -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutPhone"
-                style="@style/DojoMovie.TextInputLayout"
+                <!-- App Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DoJo Movie"
+                    style="@style/DojoMovie.Text.LargeTitle"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Subtitle -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome back"
+                    style="@style/DojoMovie.Text.Subhead"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+            <!-- Login Form -->
+            <LinearLayout
+                android:id="@+id/loginForm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Phone Number"
-                app:startIconDrawable="@drawable/ic_phone"
-                app:startIconTint="@color/text_hint">
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/logoSection"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextPhoneNumber"
+                <!-- Phone Number Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutPhone"
+                    style="@style/DojoMovie.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:textSize="16sp" />
+                    android:layout_marginBottom="16dp"
+                    android:hint="Phone Number">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:maxLines="1"
+                        android:textSize="17sp"
+                        android:fontFamily="sans-serif" />
 
-            <!-- Password Input -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutPassword"
-                style="@style/DojoMovie.TextInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:hint="Password"
-                app:startIconDrawable="@drawable/ic_lock"
-                app:startIconTint="@color/text_hint"
-                app:endIconMode="password_toggle"
-                app:endIconTint="@color/text_hint">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextPassword"
+                <!-- Password Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayoutPassword"
+                    style="@style/DojoMovie.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:textSize="16sp" />
+                    android:layout_marginBottom="24dp"
+                    android:hint="Password"
+                    app:endIconMode="password_toggle">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:textSize="17sp"
+                        android:fontFamily="sans-serif" />
 
-            <!-- Login Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonLogin"
-                style="@style/DojoMovie.Button"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginBottom="20dp"
-                android:text="Sign In"
-                android:textSize="16sp"
-                app:icon="@drawable/ic_arrow_forward"
-                app:iconGravity="end"
-                app:iconTint="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginVertical="20dp"
-                android:background="@color/divider" />
+                <!-- Login Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonLogin"
+                    style="@style/DojoMovie.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="24dp"
+                    android:text="Continue"
+                    android:textSize="17sp" />
 
-            <!-- Register Link -->
+                <!-- Register Link -->
+                <TextView
+                    android:id="@+id/textViewRegisterLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Don't have an account? Sign up"
+                    style="@style/DojoMovie.Text.Body"
+                    android:textColor="?attr/colorPrimary"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="12dp" />
+
+            </LinearLayout>
+
+            <!-- Footer -->
             <TextView
-                android:id="@+id/textViewRegisterLink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Don't have an account? Sign up here"
-                android:textColor="@color/primary"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-medium"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?android:attr/selectableItemBackground"
-                android:padding="8dp" />
+                android:text="DoJo Movie v1.0"
+                style="@style/DojoMovie.Text.Caption2"
+                android:textColor="@color/text_hint"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintTop_toBottomOf="@+id/loginForm"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
-
-    <!-- Footer -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="DoJo Movie v1.0"
-        android:textSize="12sp"
-        android:textColor="@color/text_hint"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

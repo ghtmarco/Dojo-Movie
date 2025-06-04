@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.json.JSONArray
 import org.json.JSONException
 
@@ -38,9 +38,10 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var requestQueue: RequestQueue
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var myMap: GoogleMap
+    private lateinit var bottomNavigation: BottomNavigationView
     private val filmList = mutableListOf<Film>()
 
-    // TAMBAH: AsyncTask dan Progress Bar seperti demo dosen
+    // AsyncTask dan Progress Bar
     private var filmLoadTask: FilmLoadTask? = null
     private lateinit var progressBar: ProgressBar
 
@@ -61,16 +62,14 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
         requestQueue = Volley.newRequestQueue(this)
 
-        // TAMBAH: Inisialisasi AsyncTask seperti demo dosen
+        // Load films with AsyncTask
         loadFilmsWithAsyncTask()
     }
 
     private fun setupViews() {
         filmRecycler = findViewById(R.id.recyclerFilms)
         filmRecycler.layoutManager = LinearLayoutManager(this)
-
-        // TAMBAH: Progress bar setup (perlu ditambah ke layout juga)
-        // progressBar = findViewById(R.id.progressBarFilms)
+        progressBar = findViewById(R.id.progressBarFilms)
 
         filmAdapter = FilmAdapter(filmList) { film ->
             val intent = Intent(this, DetailFilmActivity::class.java)
@@ -81,22 +80,28 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupBottomNavigation() {
-        val navHome = findViewById<LinearLayout>(R.id.navHome)
-        val navHistory = findViewById<LinearLayout>(R.id.navHistory)
-        val navProfile = findViewById<LinearLayout>(R.id.navProfile)
+        bottomNavigation = findViewById(R.id.bottomNavigation)
+        bottomNavigation.selectedItemId = R.id.nav_home
 
-        navHome.setOnClickListener {
-            Toast.makeText(this, "You are on Home", Toast.LENGTH_SHORT).show()
-        }
-
-        navHistory.setOnClickListener {
-            val intent = Intent(this, HistoryActivity::class.java)
-            startActivity(intent)
-        }
-
-        navProfile.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    // Already on home, do nothing or scroll to top
+                    filmRecycler.smoothScrollToPosition(0)
+                    true
+                }
+                R.id.nav_history -> {
+                    val intent = Intent(this, HistoryActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.nav_profile -> {
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
         }
     }
 
@@ -156,11 +161,10 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         Toast.makeText(this, "DoJo Movie location loaded", Toast.LENGTH_SHORT).show()
     }
 
-    // TAMBAH: Function untuk load films dengan AsyncTask seperti demo dosen
     private fun loadFilmsWithAsyncTask() {
         filmLoadTask = FilmLoadTask()
-        // progressBar.visibility = View.VISIBLE
-        // progressBar.max = 100
+        progressBar.visibility = View.VISIBLE
+        progressBar.max = 100
         filmLoadTask!!.execute()
     }
 
@@ -213,18 +217,7 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         return filmList
     }
 
-    // TAMBAH: Utility function seperti demo dosen
-    private fun disableView(view: View, isDisable: Boolean) {
-        if (isDisable) {
-            view.alpha = 0.5f
-            view.isEnabled = false
-        } else {
-            view.alpha = 1.0f
-            view.isEnabled = true
-        }
-    }
-
-    // TAMBAH: AsyncTask inner class seperti demo dosen
+    // AsyncTask inner class
     inner class FilmLoadTask : android.os.AsyncTask<Void, Int, Boolean>() {
         override fun doInBackground(vararg params: Void?): Boolean {
             return try {
@@ -240,13 +233,13 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         override fun onPreExecute() {
-            // progressBar.visibility = View.VISIBLE
+            progressBar.visibility = View.VISIBLE
             Toast.makeText(this@HomePageActivity, "Loading films...", Toast.LENGTH_SHORT).show()
             super.onPreExecute()
         }
 
         override fun onPostExecute(result: Boolean) {
-            // progressBar.visibility = View.GONE
+            progressBar.visibility = View.GONE
             if (result) {
                 loadFilms() // Load actual data after simulation
             } else {
@@ -257,14 +250,13 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
         override fun onProgressUpdate(vararg values: Int?) {
             if (values.isNotEmpty() && values[0] != null) {
-                // progressBar.progress = values[0]!!
-                // Optional: Update progress text
+                progressBar.progress = values[0]!!
             }
             super.onProgressUpdate(*values)
         }
 
         override fun onCancelled() {
-            // progressBar.visibility = View.GONE
+            progressBar.visibility = View.GONE
             Toast.makeText(this@HomePageActivity, "Loading cancelled", Toast.LENGTH_SHORT).show()
             super.onCancelled()
         }
@@ -272,7 +264,6 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onDestroy() {
         super.onDestroy()
-        // TAMBAH: Cancel AsyncTask seperti demo dosen
         filmLoadTask?.cancel(true)
     }
 }
