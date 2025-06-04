@@ -47,8 +47,12 @@ class LoginPage : AppCompatActivity() {
                         apply()
                     }
 
-                    val intent = Intent(this, HomePageActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    // PERBAIKAN: Redirect ke OTP page sesuai soal (bukan Home page)
+                    val intent = Intent(this, OtpPage::class.java)
+                    intent.putExtra("phone", phone)
+                    intent.putExtra("password", password)
+                    intent.putExtra("otp", 123456) // Dummy OTP untuk login
+                    intent.putExtra("is_login", true) // Flag untuk membedakan register vs login
                     startActivity(intent)
                     finish()
                 } else {

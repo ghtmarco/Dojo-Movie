@@ -1,43 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors from Logo -->
-    <color name="primary">#E53E3E</color>
-    <color name="primary_dark">#C53030</color>
-    <color name="primary_light">#FC8181</color>
-    <color name="primary_variant">#F56565</color>
+    <!-- Apple Style Light Mode Colors -->
 
-    <!-- Secondary Colors -->
-    <color name="secondary">#4A5568</color>
-    <color name="secondary_light">#718096</color>
-    <color name="secondary_dark">#2D3748</color>
+    <!-- Primary Colors (iOS Blue instead of red) -->
+    <color name="primary">#007AFF</color>
+    <color name="primary_dark">#0051D5</color>
+    <color name="primary_light">#4DB6FF</color>
+    <color name="primary_variant">#5AC8FA</color>
 
-    <!-- Background Colors -->
-    <color name="background">#FAFAFA</color>
+    <!-- Secondary Colors (iOS Gray) -->
+    <color name="secondary">#8E8E93</color>
+    <color name="secondary_light">#AEAEB2</color>
+    <color name="secondary_dark">#6D6D70</color>
+
+    <!-- Background Colors (iOS System) -->
+    <color name="background">#FFFFFF</color>
     <color name="surface">#FFFFFF</color>
-    <color name="surface_variant">#F7FAFC</color>
+    <color name="surface_variant">#F9F9F9</color>
+    <color name="surface_secondary">#F2F2F7</color>
 
-    <!-- Text Colors -->
-    <color name="text_primary">#1A202C</color>
-    <color name="text_secondary">#4A5568</color>
-    <color name="text_hint">#A0AEC0</color>
-    <color name="text_disabled">#CBD5E0</color>
+    <!-- Text Colors (iOS System) -->
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#3C3C43</color>
+    <color name="text_tertiary">#6D6D70</color>
+    <color name="text_hint">#8E8E93</color>
+    <color name="text_disabled">#AEAEB2</color>
 
-    <!-- Accent Colors -->
-    <color name="accent_success">#38A169</color>
-    <color name="accent_warning">#D69E2E</color>
-    <color name="accent_error">#E53E3E</color>
-    <color name="accent_info">#3182CE</color>
+    <!-- Accent Colors (iOS System) -->
+    <color name="accent_success">#34C759</color>
+    <color name="accent_warning">#FF9500</color>
+    <color name="accent_error">#FF3B30</color>
+    <color name="accent_info">#007AFF</color>
 
-    <!-- Border Colors -->
-    <color name="border">#E2E8F0</color>
-    <color name="border_light">#F1F5F9</color>
-    <color name="divider">#EDF2F7</color>
+    <!-- Border Colors (iOS System) -->
+    <color name="border">#D1D1D6</color>
+    <color name="border_light">#E5E5EA</color>
+    <color name="divider">#F2F2F7</color>
 
-    <!-- Legacy Colors -->
+    <!-- Basic Colors -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 
     <!-- Card and Elevation -->
     <color name="card_background">#FFFFFF</color>
-    <color name="shadow">#1A202C</color>
+    <color name="shadow">#000000</color>
+
+    <!-- Dark Mode Colors -->
+    <color name="dark_background">#000000</color>
+    <color name="dark_surface">#1C1C1E</color>
+    <color name="dark_surface_variant">#2C2C2E</color>
+    <color name="dark_surface_secondary">#3A3A3C</color>
+
+    <color name="dark_text_primary">#FFFFFF</color>
+    <color name="dark_text_secondary">#EBEBF5</color>
+    <color name="dark_text_tertiary">#EBEBF5</color>
+    <color name="dark_text_hint">#8E8E93</color>
+
+    <color name="dark_border">#38383A</color>
+    <color name="dark_border_light">#48484A</color>
+    <color name="dark_divider">#2C2C2E</color>
+
+    <color name="dark_card_background">#1C1C1E</color>
 </resources>

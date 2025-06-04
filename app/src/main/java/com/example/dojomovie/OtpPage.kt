@@ -13,6 +13,7 @@ class OtpPage : AppCompatActivity() {
     private var userPhone: String? = null
     private var userPassword: String? = null
     private var correctOtp: Int = 0
+    private var isLogin: Boolean = false // TAMBAH: Flag untuk login vs register
     private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +25,7 @@ class OtpPage : AppCompatActivity() {
         userPhone = intent.getStringExtra("phone")
         userPassword = intent.getStringExtra("password")
         correctOtp = intent.getIntExtra("otp", 0)
+        isLogin = intent.getBooleanExtra("is_login", false) // TAMBAH: Check if from login
 
         val otpInput = findViewById<EditText>(R.id.editTextOtpCode)
         val verifyBtn = findViewById<Button>(R.id.buttonVerifyOtp)
@@ -42,12 +44,27 @@ class OtpPage : AppCompatActivity() {
                 if (enteredOtp == null) {
                     Toast.makeText(this, "OTP harus berupa angka", Toast.LENGTH_SHORT).show()
                 } else if (enteredOtp == correctOtp) {
-                    saveUserToDatabase()
+                    if (isLogin) {
+                        // PERBAIKAN: Jika dari login, langsung ke Home page
+                        proceedToHome()
+                    } else {
+                        // Jika dari register, save user dulu baru ke login
+                        saveUserToDatabase()
+                    }
                 } else {
                     Toast.makeText(this, "Kode OTP salah", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+    }
+
+    private fun proceedToHome() {
+        Toast.makeText(this, "OTP verified! Welcome back!", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(this, HomePageActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     private fun saveUserToDatabase() {
