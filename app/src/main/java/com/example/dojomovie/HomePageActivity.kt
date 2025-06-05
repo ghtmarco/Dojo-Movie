@@ -22,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -37,7 +38,7 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var prefs: SharedPreferences
     private lateinit var requestQueue: RequestQueue
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var myMap: GoogleMap
+    private var myMap: GoogleMap? = null
     private lateinit var bottomNavigation: BottomNavigationView
     private val filmList = mutableListOf<Film>()
 
@@ -46,6 +47,7 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val API_URL = "https://api.npoint.io/66cce8acb8f366d2a508"
     private val DOJO_LOCATION = LatLng(-6.2088, 106.8456)
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     private val filmDataWithPosters = mapOf(
         "MV001" to FilmData(
@@ -133,22 +135,40 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupMap() {
-        checkLocationPermission()
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as? SupportMapFragment
-        mapFragment?.getMapAsync(this)
+        Log.d("GoogleMaps", "Setting up map fragment...")
+
+        try {
+            val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as? SupportMapFragment
+            if (mapFragment != null) {
+                Log.d("GoogleMaps", "MapFragment found, calling getMapAsync...")
+                mapFragment.getMapAsync(this)
+            } else {
+                Log.e("GoogleMaps", "MapFragment is null! Check if R.id.mapFragment exists in layout")
+                Toast.makeText(this, "Map fragment not found", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Log.e("GoogleMaps", "Error setting up map: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
-    private fun checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+    private fun checkLocationPermission(): Boolean {
+        return if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                1
+                arrayOf(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
             )
+            false
+        } else {
+            true
         }
     }
 
@@ -158,34 +178,83 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("GoogleMaps", "Location permission granted")
+                    Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show()
+
+                    // Re-setup map with location enabled
+                    myMap?.let { map ->
+                        enableMapLocation(map)
+                    }
+                } else {
+                    Log.d("GoogleMaps", "Location permission denied")
+                    Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        myMap = googleMap
+        Log.d("GoogleMaps", "onMapReady called!")
 
-        val cameraPosition = CameraPosition.builder()
-            .target(DOJO_LOCATION)
-            .zoom(17.0f)
-            .tilt(45.0f)
-            .build()
+        try {
+            myMap = googleMap
 
-        myMap.addMarker(
-            MarkerOptions()
+            // Enable location if permission is granted
+            enableMapLocation(googleMap)
+
+            // Add marker for DoJo Movie location
+            val markerOptions = MarkerOptions()
                 .position(DOJO_LOCATION)
                 .title("DoJo Movie")
-        )
+                .snippet("Film ticket store location")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
 
-        myMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-        myMap.isBuildingsEnabled = true
+            val marker = googleMap.addMarker(markerOptions)
+            Log.d("GoogleMaps", "Marker added: $marker")
 
-        Toast.makeText(this, "DoJo Movie location loaded", Toast.LENGTH_SHORT).show()
+            // Set camera position with animation
+            val cameraPosition = CameraPosition.builder()
+                .target(DOJO_LOCATION)
+                .zoom(17.0f)
+                .tilt(45.0f)
+                .bearing(0f)
+                .build()
+
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null)
+
+            // Enable buildings and other features
+            googleMap.isBuildingsEnabled = true
+            googleMap.isTrafficEnabled = false
+            googleMap.isIndoorEnabled = true
+
+            // Set map type
+            googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+
+            Log.d("GoogleMaps", "Map setup completed successfully")
+            Toast.makeText(this, "DoJo Movie location loaded", Toast.LENGTH_SHORT).show()
+
+        } catch (e: Exception) {
+            Log.e("GoogleMaps", "Error in onMapReady: ${e.message}")
+            e.printStackTrace()
+            Toast.makeText(this, "Error setting up map: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun enableMapLocation(googleMap: GoogleMap) {
+        try {
+            if (checkLocationPermission()) {
+                googleMap.isMyLocationEnabled = true
+                googleMap.uiSettings.isMyLocationButtonEnabled = true
+                Log.d("GoogleMaps", "Location enabled on map")
+            }
+        } catch (e: SecurityException) {
+            Log.e("GoogleMaps", "Security exception when enabling location: ${e.message}")
+        } catch (e: Exception) {
+            Log.e("GoogleMaps", "Error enabling location: ${e.message}")
+        }
     }
 
     private fun loadFilmsWithAsyncTask() {
@@ -330,5 +399,13 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
         filmLoadTask?.cancel(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Re-check if map is ready and add marker if needed
+        myMap?.let { map ->
+            Log.d("GoogleMaps", "Map available in onResume, checking marker...")
+        }
     }
 }
