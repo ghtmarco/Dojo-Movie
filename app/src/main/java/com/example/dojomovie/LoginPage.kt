@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.widget.Button
@@ -19,7 +20,6 @@ class LoginPage : AppCompatActivity() {
 
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var prefs: SharedPreferences
-    private lateinit var smsManager: SmsManager
     private val SMS_PERMISSION = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +28,6 @@ class LoginPage : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
         prefs = getSharedPreferences("DoJoMoviePrefs", MODE_PRIVATE)
-        smsManager = SmsManager.getDefault()
 
         val phoneInput = findViewById<EditText>(R.id.editTextPhoneNumber)
         val passwordInput = findViewById<EditText>(R.id.editTextPassword)
@@ -82,6 +81,15 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
+    private fun getSmsManager(): SmsManager {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            getSystemService(SmsManager::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            SmsManager.getDefault()
+        }
+    }
+
     private fun sendLoginOtpAndRedirect(otpCode: Int, phone: String, password: String, userId: Int) {
         try {
             val message = "DoJo Movie Login OTP: $otpCode"
@@ -89,6 +97,7 @@ class LoginPage : AppCompatActivity() {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 == PackageManager.PERMISSION_GRANTED) {
 
+                val smsManager = getSmsManager()
                 smsManager.sendTextMessage(phone, null, message, null, null)
                 Toast.makeText(this, "Login OTP sent to $phone", Toast.LENGTH_LONG).show()
             } else {

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
@@ -29,6 +31,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.json.JSONArray
 import org.json.JSONException
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -42,8 +46,9 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var bottomNavigation: BottomNavigationView
     private val filmList = mutableListOf<Film>()
 
-    private var filmLoadTask: FilmLoadTask? = null
     private lateinit var progressBar: ProgressBar
+    private lateinit var executor: ExecutorService
+    private lateinit var mainHandler: Handler
 
     private val API_URL = "https://api.npoint.io/66cce8acb8f366d2a508"
     private val DOJO_LOCATION = LatLng(-6.2088, 106.8456)
@@ -85,13 +90,16 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         prefs = getSharedPreferences("DoJoMoviePrefs", MODE_PRIVATE)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
+        executor = Executors.newFixedThreadPool(4)
+        mainHandler = Handler(Looper.getMainLooper())
+
         setupViews()
         setupBottomNavigation()
         setupMap()
 
         requestQueue = Volley.newRequestQueue(this)
 
-        loadFilmsWithAsyncTask()
+        loadFilmsWithModernApproach()
     }
 
     private fun setupViews() {
@@ -251,11 +259,34 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun loadFilmsWithAsyncTask() {
-        filmLoadTask = FilmLoadTask()
-        progressBar.visibility = View.VISIBLE
-        progressBar.max = 100
-        filmLoadTask!!.execute()
+    private fun loadFilmsWithModernApproach() {
+        mainHandler.post {
+            progressBar.visibility = View.VISIBLE
+            progressBar.max = 100
+            Toast.makeText(this, "Loading films...", Toast.LENGTH_SHORT).show()
+        }
+
+        executor.execute {
+            try {
+                for (i in 0..100 step 10) {
+                    Thread.sleep(200)
+                    val progress = i
+                    mainHandler.post {
+                        progressBar.progress = progress
+                    }
+                }
+
+                mainHandler.post {
+                    progressBar.visibility = View.GONE
+                    loadFilms()
+                }
+            } catch (e: Exception) {
+                mainHandler.post {
+                    progressBar.visibility = View.GONE
+                    Toast.makeText(this, "Failed to load films", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun loadFilms() {
@@ -347,52 +378,9 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         return filmList
     }
 
-    inner class FilmLoadTask : android.os.AsyncTask<Void, Int, Boolean>() {
-        override fun doInBackground(vararg params: Void?): Boolean {
-            return try {
-                for (i in 0..100 step 10) {
-                    Thread.sleep(200)
-                    publishProgress(i)
-                }
-                true
-            } catch (e: Exception) {
-                false
-            }
-        }
-
-        override fun onPreExecute() {
-            progressBar.visibility = View.VISIBLE
-            Toast.makeText(this@HomePageActivity, "Loading films...", Toast.LENGTH_SHORT).show()
-            super.onPreExecute()
-        }
-
-        override fun onPostExecute(result: Boolean) {
-            progressBar.visibility = View.GONE
-            if (result) {
-                loadFilms()
-            } else {
-                Toast.makeText(this@HomePageActivity, "Failed to load films", Toast.LENGTH_SHORT).show()
-            }
-            super.onPostExecute(result)
-        }
-
-        override fun onProgressUpdate(vararg values: Int?) {
-            if (values.isNotEmpty() && values[0] != null) {
-                progressBar.progress = values[0]!!
-            }
-            super.onProgressUpdate(*values)
-        }
-
-        override fun onCancelled() {
-            progressBar.visibility = View.GONE
-            Toast.makeText(this@HomePageActivity, "Loading cancelled", Toast.LENGTH_SHORT).show()
-            super.onCancelled()
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        filmLoadTask?.cancel(true)
+        executor.shutdown()
     }
 
     override fun onResume() {

@@ -3,6 +3,7 @@ package com.example.dojomovie
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.telephony.SmsManager
 import android.widget.Button
@@ -17,7 +18,6 @@ import kotlin.random.Random
 class RegisterPage : AppCompatActivity() {
 
     private lateinit var dbHelper: DatabaseHelper
-    private lateinit var smsManager: SmsManager
     private val SMS_PERMISSION = 101
 
     private lateinit var phoneInput: EditText
@@ -31,7 +31,6 @@ class RegisterPage : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         dbHelper = DatabaseHelper(this)
-        smsManager = SmsManager.getDefault()
 
         initViews()
         setupListeners()
@@ -92,6 +91,15 @@ class RegisterPage : AppCompatActivity() {
         }
     }
 
+    private fun getSmsManager(): SmsManager {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            getSystemService(SmsManager::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            SmsManager.getDefault()
+        }
+    }
+
     private fun sendOtpAndRedirect(otpCode: Int, phone: String, password: String) {
         try {
             val message = "DoJo Movie OTP: $otpCode"
@@ -99,6 +107,7 @@ class RegisterPage : AppCompatActivity() {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
                 == PackageManager.PERMISSION_GRANTED) {
 
+                val smsManager = getSmsManager()
                 smsManager.sendTextMessage(phone, null, message, null, null)
                 Toast.makeText(this, "OTP sent to $phone", Toast.LENGTH_LONG).show()
             } else {

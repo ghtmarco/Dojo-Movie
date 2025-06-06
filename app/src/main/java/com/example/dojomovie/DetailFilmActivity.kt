@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
@@ -36,6 +37,7 @@ class DetailFilmActivity : AppCompatActivity() {
         initViews()
         setupToolbar()
         initDatabase()
+        setupBackPressedCallback()
 
         val filmId = intent.getStringExtra("film_id")
 
@@ -48,6 +50,14 @@ class DetailFilmActivity : AppCompatActivity() {
 
         setupQuantityListener()
         setupBuyButton()
+    }
+
+    private fun setupBackPressedCallback() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finish()
+            }
+        })
     }
 
     private fun initViews() {
@@ -73,7 +83,7 @@ class DetailFilmActivity : AppCompatActivity() {
         }
 
         toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            finish()
         }
     }
 
@@ -190,22 +200,17 @@ class DetailFilmActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
+        finish()
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
     }
 }
