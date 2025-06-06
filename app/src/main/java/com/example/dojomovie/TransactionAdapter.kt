@@ -1,4 +1,4 @@
-wpackage com.example.dojomovie
+package com.example.dojomovie
 
 import android.view.LayoutInflater
 import android.view.View
