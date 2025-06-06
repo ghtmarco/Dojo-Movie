@@ -184,7 +184,6 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
                     Log.d("GoogleMaps", "Location permission granted")
                     Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show()
 
-                    // Re-setup map with location enabled
                     myMap?.let { map ->
                         enableMapLocation(map)
                     }
@@ -202,10 +201,8 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
         try {
             myMap = googleMap
 
-            // Enable location if permission is granted
             enableMapLocation(googleMap)
 
-            // Add marker for DoJo Movie location
             val markerOptions = MarkerOptions()
                 .position(DOJO_LOCATION)
                 .title("DoJo Movie")
@@ -215,7 +212,6 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
             val marker = googleMap.addMarker(markerOptions)
             Log.d("GoogleMaps", "Marker added: $marker")
 
-            // Set camera position with animation
             val cameraPosition = CameraPosition.builder()
                 .target(DOJO_LOCATION)
                 .zoom(17.0f)
@@ -225,12 +221,10 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000, null)
 
-            // Enable buildings and other features
             googleMap.isBuildingsEnabled = true
             googleMap.isTrafficEnabled = false
             googleMap.isIndoorEnabled = true
 
-            // Set map type
             googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
 
             Log.d("GoogleMaps", "Map setup completed successfully")
@@ -403,7 +397,6 @@ class HomePageActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        // Re-check if map is ready and add marker if needed
         myMap?.let { map ->
             Log.d("GoogleMaps", "Map available in onResume, checking marker...")
         }
