@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
@@ -30,6 +31,8 @@ class DetailFilmActivity : AppCompatActivity() {
     private var currentFilm: Film? = null
     private var currentUserId: Int = -1
 
+    private var isNavigating = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_film)
@@ -45,7 +48,7 @@ class DetailFilmActivity : AppCompatActivity() {
             loadFilmDetail(filmId)
         } else {
             Toast.makeText(this, "Film not found", Toast.LENGTH_SHORT).show()
-            finish()
+            navigateBack()
         }
 
         setupQuantityListener()
@@ -53,11 +56,30 @@ class DetailFilmActivity : AppCompatActivity() {
     }
 
     private fun setupBackPressedCallback() {
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+        val callback = object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
-                finish()
+                Log.d("DetailFilm", "OnBackPressedCallback triggered")
+                navigateBack()
             }
-        })
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    private fun navigateBack() {
+        if (isNavigating) {
+            Log.d("DetailFilm", "Already navigating, ignoring")
+            return
+        }
+
+        isNavigating = true
+        Log.d("DetailFilm", "Navigating back...")
+
+        try {
+            finish()
+        } catch (e: Exception) {
+            Log.e("DetailFilm", "Error during navigation: ${e.message}")
+            isNavigating = false
+        }
     }
 
     private fun initViews() {
@@ -73,17 +95,28 @@ class DetailFilmActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        setSupportActionBar(toolbar)
+        try {
+            Log.d("DetailFilm", "Setting up toolbar...")
 
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowHomeEnabled(true)
-            title = "Film Details"
-            setDisplayShowTitleEnabled(false)
-        }
+            setSupportActionBar(toolbar)
 
-        toolbar.setNavigationOnClickListener {
-            finish()
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                setDisplayShowHomeEnabled(true)
+            }
+
+            toolbar.post {
+                toolbar.setNavigationOnClickListener {
+                    Log.d("DetailFilm", "Toolbar navigation clicked")
+                    navigateBack()
+                }
+            }
+
+            Log.d("DetailFilm", "Toolbar setup completed successfully")
+
+        } catch (e: Exception) {
+            Log.e("DetailFilm", "Error setting up toolbar: ${e.message}")
+            e.printStackTrace()
         }
     }
 
@@ -100,7 +133,7 @@ class DetailFilmActivity : AppCompatActivity() {
             displayFilmDetail(currentFilm!!)
         } else {
             Toast.makeText(this, "Film not found in database", Toast.LENGTH_SHORT).show()
-            finish()
+            navigateBack()
         }
     }
 
@@ -122,16 +155,21 @@ class DetailFilmActivity : AppCompatActivity() {
             if (imageUrl.isNotEmpty() && imageUrl != "pathToImage") {
                 Glide.with(this)
                     .load(imageUrl)
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
                     .into(filmCover)
 
                 Glide.with(this)
                     .load(imageUrl)
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
                     .into(filmBackdrop)
             } else {
                 filmCover.setImageResource(R.drawable.ic_launcher_foreground)
                 filmBackdrop.setImageResource(R.drawable.ic_launcher_foreground)
             }
         } catch (e: Exception) {
+            Log.e("DetailFilm", "Error loading image: ${e.message}")
             filmCover.setImageResource(R.drawable.ic_launcher_foreground)
             filmBackdrop.setImageResource(R.drawable.ic_launcher_foreground)
         }
@@ -190,9 +228,9 @@ class DetailFilmActivity : AppCompatActivity() {
                 val totalAmount = currentFilm!!.price * quantity
 
                 Toast.makeText(this,
-                    "Purchase successful!\n ${currentFilm!!.title}\n Quantity: $quantity\n Total: ${formatter.format(totalAmount)}",
+                    "Purchase successful!\n${currentFilm!!.title}\nQuantity: $quantity\nTotal: ${formatter.format(totalAmount)}",
                     Toast.LENGTH_LONG).show()
-                finish()
+                navigateBack()
             } else {
                 Toast.makeText(this, "Purchase failed. Please try again.", Toast.LENGTH_SHORT).show()
             }
@@ -200,14 +238,16 @@ class DetailFilmActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        finish()
+        Log.d("DetailFilm", "onSupportNavigateUp called")
+        navigateBack()
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                Log.d("DetailFilm", "Home menu item selected")
+                navigateBack()
                 true
             }
             else -> super.onOptionsItemSelected(item)
