@@ -4,9 +4,13 @@ Android application for browsing and buying movies, built with Kotlin. This proj
 
 ## Preview
 
-| Login | Home | Detail | History |
+| Login | Register | OTP | Home |
 | :---: | :---: | :---: | :---: |
-| <img src="screenshots/login.png" width="200" /> | <img src="screenshots/home.png" width="200" /> | <img src="screenshots/detail.png" width="200" /> | <img src="screenshots/history.png" width="200" /> |
+| <img src="screenshots/login.png" width="180" /> | <img src="screenshots/register.png" width="180" /> | <img src="screenshots/otp.png" width="180" /> | <img src="screenshots/home.png" width="180" /> |
+
+| Detail | History | Profile |
+| :---: | :---: | :---: |
+| <img src="screenshots/detail.png" width="180" /> | <img src="screenshots/history.png" width="180" /> | <img src="screenshots/profile.png" width="180" /> |
 
 ## Features
 
