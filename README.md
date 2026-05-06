@@ -1,7 +1,7 @@
 # Dojo-Movie
 
 <div align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="Logo" width="120" />
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" alt="Logo" width="120" />
   <p align="center">
     <strong>A modern Android application for cinema ticket booking.</strong>
     <br />
