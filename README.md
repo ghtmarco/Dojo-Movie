@@ -1,76 +1,75 @@
-# DoJo Movie
+# 🎬 Dojo Movie
 
-## 1. Overview
-DoJo Movie is one of the leading providers of high-quality films globally. To expand its customer base, DoJo Movie is developing this mobile application for the Android operating system, allowing users to download it and increase the company's visibility.
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
+[![Android](https://img.shields.io/badge/Android-API%2024%2B-green.svg?style=flat&logo=android)](https://developer.android.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-This application is developed as a project for the "Mobile Community Solution" course.
+**Dojo Movie** is a premium mobile application designed for high-quality film enthusiasts. Developed as part of the "Mobile Community Solution" course, it offers a seamless experience for browsing, purchasing, and managing your movie collection right from your Android device.
 
-## 2. Features
-The DoJo Movie application offers several features including:
+---
 
-*   **User Authentication:**
-    *   Login with phone number and password.
-    *   User registration with phone number, password, and confirmation.
-    *   OTP (One-Time Password) verification sent via SMS.
-*   **Movie Browsing & Purchase:**
-    *   View a list of available films. Film data is fetched from a JSON API and stored locally.
-    *   View detailed information for each film, including cover image, title, and price.
-    *   Purchase films with an option to select quantity and see a dynamically updated total price.
-*   **User Account & History:**
-    *   View transaction history, which includes details of films bought, quantity, and price.
-    *   User profile section displaying the logged-in user's phone number.
-    *   Logout functionality with a confirmation prompt.
-*   **Location Services:**
-    *   Display the DoJo Movie store location on Google Maps with a designated marker.
+## ✨ Features
 
-## 3. Technologies Used
-*   **Language:** Kotlin
-*   **Platform:** Android
-*   **UI:**
-    *   Material Design 3
-    *   RecyclerView (for displaying lists of films and transaction history)
-    *   Standard Android UI components: ImageView, EditText, Button, TextView
-    *   Toast notifications (for user feedback)
-*   **Networking:**
-    *   Volley (for fetching film data from the JSON API)
-*   **Database:**
-    *   SQLite (for local storage of user information, film details, and transaction records)
-*   **Mapping:**
-    *   Google Play Services for Android Maps SDK
-*   **Image Loading:**
-    *   Glide
+- 🔐 **Secure Authentication**: Register and login using your phone number with OTP (One-Time Password) verification via SMS.
+- 🎞️ **Movie Catalog**: Browse a wide selection of films fetched from a live JSON API.
+- 🛍️ **Smart Purchasing**: View detailed movie info, select quantities, and see real-time price updates before buying.
+- 📜 **Transaction History**: Keep track of all your past purchases with detailed records.
+- 📍 **Store Locator**: Find our physical store easily with integrated Google Maps and custom markers.
+- 👤 **User Profile**: Manage your account and security settings with ease.
 
-## 4. Application Structure (Key Pages)
-The application consists of the following main pages:
-*   **Login Page:** For existing user authentication.
-*   **Register Page:** For new user registration.
-*   **OTP Page:** For phone number verification via OTP.
-*   **Home Page:** The main landing page after login, containing:
-    *   Home Section (Store location, film listings)
-    *   History Section (Link to transaction history)
-    *   Profile Section (User phone number, logout)
-*   **Detail Film Page:** Shows detailed information about a selected film and allows users to purchase it.
-*   **History Page:** Displays a list of past transactions for the logged-in user.
+---
 
-## 5. Database Schema
-The application uses an SQLite database with three main tables:
-*   **`users`**: Stores user credentials (ID, phone number, password).
-*   **`films`**: Stores film details (ID, title, image URL, price).
-*   **`transactions`**: Stores user purchase history (ID, user ID, film ID, quantity).
+## 📸 Screenshots
 
-## 6. API Endpoint
-Initial film data is fetched from the following JSON API:
-`https://api.npoint.io/66cce8acb8f366d2a508`
+| Login Page | Home Page | Movie Detail | History |
+| :---: | :---: | :---: | :---: |
+| ![Login](screenshots/login.png) | ![Home](screenshots/home.png) | ![Detail](screenshots/detail.png) | ![History](screenshots/history.png) |
 
-## 7. Setup Instructions
-To set up and run this project locally:
-1.  Clone the repository: `git clone <repository-url>`
-2.  Open the project in Android Studio.
-3.  **Important:** Ensure you have a valid Google Maps API key. You will need to add it to the `app/src/main/AndroidManifest.xml` file, typically within a `<meta-data>` tag like this:
-    ```xml
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="YOUR_GOOGLE_MAPS_API_KEY_HERE" />
-    ```
-    (The project currently has a placeholder key which might need to be replaced).
-4.  Build and run the application on an Android emulator (API level 24 or higher) or a physical Android device.
+> *Note: Screenshots will be updated after running the app.*
+
+---
+
+## 🛠️ Tech Stack
+
+- **Language**: [Kotlin](https://kotlinlang.org)
+- **Networking**: [Volley](https://google.github.io/volley/) for efficient API requests.
+- **Image Loading**: [Glide](https://github.com/bumptech/glide) for smooth image caching and display.
+- **Database**: [SQLite](https://sqlite.org) for robust local data persistence.
+- **Maps**: [Google Maps SDK](https://developers.google.com/maps/documentation/android-sdk/overview) for location services.
+- **UI Framework**: [Material Design 3](https://m3.material.io) for a modern and responsive look.
+
+---
+
+## 🗄️ Database Schema
+
+The application utilizes a local SQLite database with the following structure:
+- `users`: Credentials and account info.
+- `films`: Cached movie data from the API.
+- `transactions`: Detailed purchase history for each user.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Android Studio Hedgehog or newer.
+- Android SDK 35 (Compile SDK).
+- A valid [Google Maps API Key](https://console.cloud.google.com/).
+
+### Installation
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/ghtmarco/Dojo-Movie.git
+   ```
+2. **Setup API Key**
+   Add your Google Maps API key to `local.properties`:
+   ```properties
+   MAPS_API_KEY=YOUR_API_KEY_HERE
+   ```
+3. **Build & Run**
+   Open the project in Android Studio, sync Gradle, and run on an emulator or physical device (API 24+).
+
+---
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
