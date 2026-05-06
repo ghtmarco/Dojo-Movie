@@ -15,11 +15,11 @@
 
 | Login | Register | OTP |
 | :---: | :---: | :---: |
-| <img src="screenshots/login.png" width="200" /> | <img src="screenshots/register.png" width="200" /> | <img src="screenshots/otp.png" width="200" /> |
+| <img src="screenshots/LoginPage.png" width="200" /> | <img src="screenshots/RegitesPage.png" width="200" /> | <img src="screenshots/OTPPage.png" width="200" /> |
 
 | Home | Detail | History | Profile |
 | :---: | :---: | :---: | :---: |
-| <img src="screenshots/home.png" width="200" /> | <img src="screenshots/detail.png" width="200" /> | <img src="screenshots/history.png" width="200" /> | <img src="screenshots/profile.png" width="200" /> |
+| <img src="screenshots/HomePage.png" width="200" /> | <img src="screenshots/DetailPage.png" width="200" /> | <img src="screenshots/HistoryPage.png" width="200" /> | <img src="screenshots/UserPage.png" width="200" /> |
 
 ## Features
 
