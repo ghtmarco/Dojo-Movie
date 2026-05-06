@@ -1,85 +1,59 @@
-# Dojo-Movie
-
 <div align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" alt="Logo" width="120" />
-  <p align="center">
-    <strong>A modern Android application for cinema ticket booking.</strong>
-    <br />
-    Built with Kotlin for the Mobile Community Solution course.
-  </p>
-  
-  <p align="center">
-    <img src="https://img.shields.io/badge/Platform-Android-brightgreen.svg" alt="Platform" />
-    <img src="https://img.shields.io/badge/Language-Kotlin-blue.svg" alt="Language" />
-    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" />
-  </p>
+  <img src="screenshots/logo.png" alt="DoJo Movie" width="120" />
+  <h1>DoJo Movie</h1>
+  <p>Android app for browsing and purchasing cinema tickets.</p>
+
+  <img src="https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white" />
+  <img src="https://img.shields.io/badge/Language-Kotlin-7F52FF?logo=kotlin&logoColor=white" />
+  <img src="https://img.shields.io/badge/Min%20SDK-24-blue" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow" />
 </div>
 
 ---
 
-## 📖 Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Previews](#previews)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Project Structure](#project-structure)
+## Screenshots
 
-## 🌟 Overview
-**Dojo-Movie** is a comprehensive movie ticketing platform designed to provide a seamless user experience for browsing current cinema listings and securing tickets. The app combines robust authentication, local data persistence, and interactive location services.
-
-## ✨ Features
-- 🔐 **Secure Authentication**: Phone-based registration and login with simulated OTP verification.
-- 🎬 **Dynamic Movie Catalog**: Real-time fetching of movie data from a remote JSON API.
-- 📍 **Store Locator**: Integrated Google Maps SDK to find the nearest Dojo-Movie branch.
-- 🛒 **Intuitive Booking**: Streamlined transaction flow with automated price calculations.
-- 📜 **Purchase History**: Local tracking of all movie tickets purchased by the user.
-- 💾 **Offline Support**: SQLite integration for caching movie lists and user data.
-
-## 📱 Previews
-
-| Login | Register | OTP | Home |
-| :---: | :---: | :---: | :---: |
-| <img src="screenshots/login.png" width="180" /> | <img src="screenshots/register.png" width="180" /> | <img src="screenshots/otp.png" width="180" /> | <img src="screenshots/home.png" width="180" /> |
-
-| Detail | History | Profile |
+| Login | Register | OTP |
 | :---: | :---: | :---: |
-| <img src="screenshots/detail.png" width="180" /> | <img src="screenshots/history.png" width="180" /> | <img src="screenshots/profile.png" width="180" /> |
+| <img src="screenshots/login.png" width="200" /> | <img src="screenshots/register.png" width="200" /> | <img src="screenshots/otp.png" width="200" /> |
 
-## 🛠️ Tech Stack
-- **Core**: Kotlin, Android SDK
-- **Networking**: Volley (HTTP requests)
-- **Image Loading**: Glide
-- **Database**: SQLite (Local persistence)
-- **Services**: Google Play Services (Maps & Location)
-- **UI Components**: Material Design 3
+| Home | Detail | History | Profile |
+| :---: | :---: | :---: | :---: |
+| <img src="screenshots/home.png" width="200" /> | <img src="screenshots/detail.png" width="200" /> | <img src="screenshots/history.png" width="200" /> | <img src="screenshots/profile.png" width="200" /> |
 
-## 🚀 Installation
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/ghtmarco/dojo-movie.git
+## Features
+
+- **Phone Auth** — Register and sign in using phone number + OTP verification with a 2-minute expiry window.
+- **Movie Catalog** — Pulls live movie listings from a remote JSON API and renders them in a RecyclerView with Glide-loaded posters.
+- **Store Locator** — Embedded Google Maps fragment pinpointing the nearest DoJo Movie store location.
+- **Purchase Flow** — Select quantity, see real-time total price, and confirm checkout in a single screen.
+- **Transaction History** — SQLite-backed purchase records with filter support, persisted locally across sessions.
+- **Profile** — Displays the logged-in user's phone number with a sign-out option.
+
+## Tech Stack
+
+| Layer | Library |
+|---|---|
+| Language | Kotlin |
+| Networking | Volley |
+| Image loading | Glide 4.16 |
+| Maps | Google Maps SDK 18.2 + Location 21.0 |
+| UI | Material Design 3, ViewBinding |
+| Storage | SQLite (via SQLiteOpenHelper) |
+| Min SDK | 24 (Android 7.0) |
+
+## Setup
+
+1. Clone the repo and open it in **Android Studio Hedgehog or later**.
+2. Add the following to your `local.properties`:
    ```
-2. **Open in Android Studio**
-   Wait for Gradle to sync dependencies.
-3. **Configure API Keys**
-   Add your Google Maps API Key to `local.properties`:
-   ```properties
-   MAPS_API_KEY=YOUR_API_KEY_HERE
+   MAPS_API_KEY=your_google_maps_api_key
+   BASE_URL=your_api_base_url
    ```
-4. **Build & Run**
-   Run the project on an Emulator or physical device (Min SDK 24).
+3. Sync Gradle and run on a device or emulator running **API 24+**.
 
-## 📂 Project Structure
-```text
-app/src/main/java/com/example/dojomovie/
-├── activities/       # UI Pages (Login, Register, Home, etc.)
-├── models/           # Data classes
-├── adapters/         # RecyclerView adapters
-└── utils/            # Database and network helpers
-```
+> Targets SDK 35. Make sure your local Android SDK includes platform 35.
 
----
+## License
 
-**Developed for the Mobile Community Solution Course**
-Copyright (c) 2026 [Dojo Movie Team](https://github.com/ghtmarco)
-Licensed under the [MIT License](LICENSE).
+[MIT](LICENSE) — 2026 ghtmarco
