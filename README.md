@@ -9,6 +9,8 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow" />
 </div>
 
+*Note: This application was developed as a collaborative group project to fulfill the requirements for the **MOBI6006001 - LAB** course at **Binus University**.*
+
 ---
 
 ## Screenshots
